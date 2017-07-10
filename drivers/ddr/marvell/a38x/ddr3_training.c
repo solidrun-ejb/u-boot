@@ -238,21 +238,6 @@ int ddr3_tip_configure_cs(u32 dev_num, u32 if_id, u32 cs_num, u32 enable)
 			      SDRAM_ACCESS_CONTROL_REG, 1 << (16 + cs_num),
 			      1 << (16 + cs_num)));
 	}
-	switch (cs_num) {
-	case 0:
-	case 1:
-	case 2:
-		CHECK_STATUS(ddr3_tip_if_write
-			     (dev_num, ACCESS_TYPE_UNICAST, if_id,
-			      DDR_CONTROL_LOW_REG, (enable << (cs_num + 11)),
-			      1 << (cs_num + 11)));
-		break;
-	case 3:
-		CHECK_STATUS(ddr3_tip_if_write
-			     (dev_num, ACCESS_TYPE_UNICAST, if_id,
-			      DDR_CONTROL_LOW_REG, (enable << 15), 1 << 15));
-		break;
-	}
 
 	return MV_OK;
 }
