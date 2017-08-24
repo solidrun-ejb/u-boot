@@ -42,8 +42,14 @@ static u32 get_boot_device(void)
 		return BOOT_DEVICE_MMC1;
 #endif
 	case BOOT_FROM_UART:
+	case BOOT_FROM_UART_ALT1:
+	case BOOT_FROM_UART_ALT2:
 		return BOOT_DEVICE_UART;
+	case BOOT_FROM_SATA:
+	case BOOT_FROM_SATA_ALT:
+		return BOOT_DEVICE_SATA;
 	case BOOT_FROM_SPI:
+	case BOOT_FROM_SPI_ALT:
 	default:
 		return BOOT_DEVICE_SPI;
 	};
