@@ -56,7 +56,7 @@
  * As result in MMC/eMMC case it will be a 1 sector gap between u-boot
  * image and environment
  */
-#define CONFIG_ENV_OFFSET		0xf0000
+#define CONFIG_ENV_OFFSET		0x104400
 #define CONFIG_ENV_ADDR			CONFIG_ENV_OFFSET
 
 #define CONFIG_PHY_MARVELL		/* there is a marvell phy */
