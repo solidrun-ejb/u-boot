@@ -29,7 +29,7 @@
 /* SPI NOR flash default params, used by sf commands */
 #define CONFIG_SF_DEFAULT_SPEED		1000000
 #define CONFIG_SF_DEFAULT_MODE		SPI_MODE_3
-#define CONFIG_SPI_FLASH_STMICRO
+#define CONFIG_SPI_FLASH_WINBOND
 
 /*
  * SDIO/MMC Card Configuration
