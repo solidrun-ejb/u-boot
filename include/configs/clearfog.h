@@ -79,6 +79,8 @@
 					CONFIG_SYS_SCSI_MAX_LUN)
 #endif
 
+#define CONFIG_OVERWRITE_ETHADDR_ONCE
+
 #define CONFIG_SYS_ALT_MEMTEST
 
 /* Keep device tree and initrd in lower memory so the kernel can access them */
