@@ -116,11 +116,17 @@ kwboot_spinner(void)
 }
 
 static void
-__progress(int pct, char c)
+__progress(int pct, char c, bool reset)
 {
 	const int width = 70;
 	static const char *nl = "";
 	static int pos;
+
+	if (reset) {
+		pos = 0;
+		nl = "";
+		return;
+	}
 
 	if (pos % width == 0)
 		printf("%s%3d %% [", nl, pct);
@@ -141,6 +147,12 @@ __progress(int pct, char c)
 }
 
 static void
+kwboot_progress_reset(void)
+{
+	__progress(-1, (char)0, true);
+}
+
+static void
 kwboot_progress(int _pct, char c)
 {
 	static int pct;
@@ -149,7 +161,7 @@ kwboot_progress(int _pct, char c)
 		pct = _pct;
 
 	if (kwboot_verbose)
-		__progress(pct, c);
+		__progress(pct, c, false);
 }
 
 static int
@@ -702,7 +714,7 @@ int
 main(int argc, char **argv)
 {
 	const char *ttypath, *imgpath;
-	int rv, rc, tty, term, prot, patch;
+	int rv, rc, tty, term, prot, patch, retry;
 	void *bootmsg;
 	void *debugmsg;
 	void *img;
@@ -719,6 +731,7 @@ main(int argc, char **argv)
 	patch = 0;
 	size = 0;
 	speed = B115200;
+	retry = 0;
 
 	kwboot_verbose = isatty(STDOUT_FILENO);
 
@@ -815,27 +828,52 @@ main(int argc, char **argv)
 		}
 	}
 
-	if (debugmsg) {
-		rc = kwboot_debugmsg(tty, debugmsg);
-		if (rc) {
-			perror("debugmsg");
-			goto out;
+	do {
+		if (debugmsg) {
+			rc = kwboot_debugmsg(tty, debugmsg);
+			if (rc) {
+				perror("debugmsg");
+				goto out;
+			}
+		} else {
+			rc = kwboot_bootmsg(tty, bootmsg);
+			if (rc) {
+				perror("bootmsg");
+				goto out;
+			}
 		}
-	} else {
-		rc = kwboot_bootmsg(tty, bootmsg);
-		if (rc) {
-			perror("bootmsg");
-			goto out;
-		}
-	}
 
-	if (img) {
-		rc = kwboot_xmodem(tty, img, size);
-		if (rc) {
-			perror("xmodem");
-			goto out;
+		if (retry) {
+			if (imgpath) {
+				prot = PROT_READ | (patch ? PROT_WRITE : 0);
+
+				img = kwboot_mmap_image(imgpath, &size, prot);
+				if (!img) {
+					perror(imgpath);
+					goto out;
+				}
+			}
+
+			if (patch) {
+				rc = kwboot_img_patch_hdr(img, size);
+				if (rc) {
+					fprintf(stderr, "%s: Invalid image.\n", imgpath);
+					goto out;
+				}
+			}
 		}
-	}
+
+		if (img) {
+			rc = kwboot_xmodem(tty, img, size);
+			if (rc) {
+				perror("xmodem");
+				kwboot_progress_reset();
+				retry = 1;
+			} else {
+				break;
+			}
+		}
+	} while (1);
 
 	if (term) {
 		rc = kwboot_terminal(tty);
