@@ -1017,6 +1017,9 @@ static int mvneta_rxq_init(struct mvneta_port *pp,
 	if (rxq->descs == NULL)
 		return -ENOMEM;
 
+	BUG_ON(rxq->descs !=
+		PTR_ALIGN(rxq->descs, ARCH_DMA_MINALIGN));
+
 	rxq->last_desc = rxq->size - 1;
 
 	/* Set Rx descriptors queue starting address */
@@ -1052,6 +1055,9 @@ static int mvneta_txq_init(struct mvneta_port *pp,
 	txq->descs_phys = (dma_addr_t)txq->descs;
 	if (txq->descs == NULL)
 		return -ENOMEM;
+
+	BUG_ON(txq->descs !=
+		PTR_ALIGN(txq->descs, ARCH_DMA_MINALIGN));
 
 	txq->last_desc = txq->size - 1;
 
@@ -1669,6 +1675,7 @@ static int mvneta_probe(struct udevice *dev)
 	struct mii_dev *bus;
 	unsigned long addr;
 	void *bd_space;
+	u32 size = 0;
 	int ret;
 	int fl_node;
 
@@ -1683,13 +1690,13 @@ static int mvneta_probe(struct udevice *dev)
 		mmu_set_region_dcache_behaviour((phys_addr_t)bd_space, BD_SPACE,
 						DCACHE_OFF);
 		buffer_loc.tx_descs = (struct mvneta_tx_desc *)bd_space;
+		size += roundup(MVNETA_MAX_TXD * sizeof(struct mvneta_tx_desc), ARCH_DMA_MINALIGN);
+
 		buffer_loc.rx_descs = (struct mvneta_rx_desc *)
-			((phys_addr_t)bd_space +
-			 MVNETA_MAX_TXD * sizeof(struct mvneta_tx_desc));
-		buffer_loc.rx_buffers = (phys_addr_t)
-			(bd_space +
-			 MVNETA_MAX_TXD * sizeof(struct mvneta_tx_desc) +
-			 MVNETA_MAX_RXD * sizeof(struct mvneta_rx_desc));
+			((phys_addr_t)bd_space + size);
+		size += roundup(MVNETA_MAX_RXD * sizeof(struct mvneta_rx_desc), ARCH_DMA_MINALIGN);
+
+		buffer_loc.rx_buffers = (phys_addr_t)(bd_space + size);
 	}
 
 	pp->base = (void __iomem *)pdata->iobase;
