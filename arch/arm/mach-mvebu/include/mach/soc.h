@@ -148,11 +148,15 @@
 #define BOOT_DEV_SEL_MASK	(0x3f << BOOT_DEV_SEL_OFFS)
 
 #define BOOT_FROM_NAND		0x0A
+#define BOOT_FROM_UART_ALT2	0x20
+#define BOOT_FROM_SATA		0x22
 #define BOOT_FROM_UART		0x28
-#define BOOT_FROM_UART_ALT	0x3f
-#define BOOT_FROM_SPI		0x32
+#define BOOT_FROM_SATA_ALT	0x2A
 #define BOOT_FROM_MMC		0x30
 #define BOOT_FROM_MMC_ALT	0x31
+#define BOOT_FROM_SPI		0x32
+#define BOOT_FROM_SPI_ALT	0x34
+#define BOOT_FROM_UART_ALT	0x3f
 #else
 /* SAR values for Armada XP */
 #define CONFIG_SAR_REG		(MVEBU_REGISTER(0x18230))
