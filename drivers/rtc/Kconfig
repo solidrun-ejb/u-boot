@@ -13,6 +13,13 @@ config DM_RTC
 	  drivers to perform the actual functions. See rtc.h for a
 	  description of the API.
 
+config RTC_MVEBU
+        bool "Armada 38x Marvell SoC RTC"
+        depends on DM_RTC 
+        help
+          If you say yes here you will get support for the in-chip RTC
+          that can be found in the Armada 38x Marvell's SoC device
+
 config RTC_PCF2127
 	bool "Enable PCF2127 driver"
 	depends on DM_RTC
