@@ -26,6 +26,7 @@ u32 spl_boot_device(void)
 	unsigned int bmode = readl(&src_base->sbmr2);
 	u32 reg = imx6_src_get_boot_mode();
 
+	debug("bmode 0x%x\n", (reg & 0x000000FF) >> 4);
 	/*
 	 * Check for BMODE if serial downloader is enabled
 	 * BOOT_MODE - see IMX6DQRM Table 8-1
@@ -52,18 +53,27 @@ u32 spl_boot_device(void)
 		/* BOOT_CFG1[3]: NOR/OneNAND Selection */
 		switch ((reg & IMX6_BMODE_EMI_MASK) >> IMX6_BMODE_EMI_SHIFT) {
 		case IMX6_BMODE_ONENAND:
+#ifdef CONFIG_SPL_ONENAND_SUPPORT
 			return BOOT_DEVICE_ONENAND;
+#endif
+			break;
 		case IMX6_BMODE_NOR:
+#ifdef CONFIG_SPL_NOR_SUPPORT
 			return BOOT_DEVICE_NOR;
-		break;
+#endif
+			break;
 		}
+		break;
 	/* Reserved: Used to force Serial Downloader */
 	case IMX6_BMODE_RESERVED:
 		return BOOT_DEVICE_BOARD;
 	/* SATA: See 8.5.4, Table 8-20 */
 #if !defined(CONFIG_MX6UL) && !defined(CONFIG_MX6ULL)
 	case IMX6_BMODE_SATA:
+#ifdef CONFIG_SPL_SATA_SUPPORT
 		return BOOT_DEVICE_SATA;
+#endif
+		break;
 #endif
 	/* Serial ROM: See 8.5.5.1, Table 8-22 */
 	case IMX6_BMODE_SERIAL_ROM:
@@ -75,25 +85,41 @@ u32 spl_boot_device(void)
 		case IMX6_BMODE_ECSPI3:
 		case IMX6_BMODE_ECSPI4:
 		case IMX6_BMODE_ECSPI5:
+#ifdef CONFIG_SPL_SPI_FLASH_SUPPORT
 			return BOOT_DEVICE_SPI;
+#endif
 		case IMX6_BMODE_I2C1:
 		case IMX6_BMODE_I2C2:
 		case IMX6_BMODE_I2C3:
+#ifdef CONFIG_SPL_I2C_SUPPORT
 			return BOOT_DEVICE_I2C;
+#endif
 		}
 		break;
 	/* SD/eSD: 8.5.3, Table 8-15  */
 	case IMX6_BMODE_SD:
 	case IMX6_BMODE_ESD:
+#ifdef CONFIG_SPL_MMC_SUPPORT
 		return BOOT_DEVICE_MMC1;
+#endif
+		break;
 	/* MMC/eMMC: 8.5.3 */
 	case IMX6_BMODE_MMC:
 	case IMX6_BMODE_EMMC:
+#ifdef CONFIG_SPL_MMC_SUPPORT
 		return BOOT_DEVICE_MMC1;
+#endif
+		break;
 	/* NAND Flash: 8.5.2, Table 8-10 */
 	case IMX6_BMODE_NAND:
+#ifdef CONFIG_SPL_NAND_SUPPORT
 		return BOOT_DEVICE_NAND;
+#endif
+		break;
 	}
+#if defined(CONFIG_SPL_DFU_SUPPORT)
+	return BOOT_DEVICE_DFU;
+#endif
 	return BOOT_DEVICE_NONE;
 }
 
