@@ -882,8 +882,9 @@ int ddr3_tip_pbs(u32 dev_num, enum pbs_dir pbs_mode)
 		 * meaning that there is no VW exist at all (No lock at
 		 * the EBA ADLL shift at EBS)
 		 */
-		if (pup_state[if_id][pup] == 1)
-			return MV_FAIL;
+		for (pup = 0; pup < tm->num_of_bus_per_interface; pup++)
+			if (pup_state[if_id][pup] == 1)
+				return MV_FAIL;
 	}
 
 	return MV_OK;
