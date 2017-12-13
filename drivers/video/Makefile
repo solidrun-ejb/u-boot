@@ -63,4 +63,5 @@ obj-$(CONFIG_VIDEO_VCXK) += bus_vcxk.o
 obj-$(CONFIG_VIDEO_VESA) += vesa.o
 
 obj-y += bridge/
+obj-y += imx/
 obj-y += sunxi/
