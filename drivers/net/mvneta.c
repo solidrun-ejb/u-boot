@@ -1634,6 +1634,7 @@ static int mvneta_recv(struct udevice *dev, int flags, uchar **packetp)
 		struct mvneta_rx_desc *rx_desc;
 		unsigned char *data;
 		u32 rx_status;
+		rx_done = 1;
 
 		/*
 		 * No cache invalidation needed here, since the desc's are
