@@ -319,6 +319,9 @@ static int m88e1518_config(struct phy_device *phydev)
 	phy_write(phydev, MDIO_DEVAD_NONE, 16, 0x214D);
 	phy_write(phydev, MDIO_DEVAD_NONE, 17, 0xCC0C);
 	phy_write(phydev, MDIO_DEVAD_NONE, 16, 0x2159);
+	phy_write(phydev, MDIO_DEVAD_NONE, 22, 0x00FB);
+	phy_write(phydev, MDIO_DEVAD_NONE, 07, 0xC00D);
+
 	phy_write(phydev, MDIO_DEVAD_NONE, MIIM_88E1118_PHY_PAGE, 0x0000);
 
 	/* SGMII-to-Copper mode initialization */
