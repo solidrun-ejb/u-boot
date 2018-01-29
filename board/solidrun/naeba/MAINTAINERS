@@ -1,0 +1,6 @@
+NAEBA BOARD
+M:	Rabeeh Khoury <rabeeh@solid-run.com>
+S:	Maintained
+F:	board/solidrun/naeba/
+F:	include/configs/naeba.h
+F:	configs/naeba_defconfig
