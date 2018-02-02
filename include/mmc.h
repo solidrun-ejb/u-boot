@@ -553,9 +553,18 @@ int mmc_set_bkops_enable(struct mmc *mmc);
 
 /**
  * Start device initialization and return immediately; it does not block on
- * polling OCR (operation condition register) status.  Then you should call
- * mmc_init, which would block on polling OCR status and complete the device
- * initializatin.
+ * polling OCR (operation condition register) status.
+ *
+ * @param mmc	Pointer to a MMC device struct
+ * @return 0 on success, <0 on error.
+ */
+int mmc_get_op_cond(struct mmc *mmc);
+
+/**
+ * Start device initialization and return immediately; it uses mmc_get_op_cond()
+ * so does not block on polling OCR (operation condition register) status.
+ * Then you should call mmc_init, which would block on polling OCR status and
+ * complete the device initialization.
  *
  * @param mmc	Pointer to a MMC device struct
  * @return 0 on success, IN_PROGRESS on waiting for OCR status, <0 on error.

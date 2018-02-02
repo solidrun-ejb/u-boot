@@ -1645,23 +1645,9 @@ static int mmc_power_init(struct mmc *mmc)
 	return 0;
 }
 
-int mmc_start_init(struct mmc *mmc)
+int mmc_get_op_cond(struct mmc *mmc)
 {
-	bool no_card;
 	int err;
-
-	/* we pretend there's no card when init is NULL */
-	no_card = mmc_getcd(mmc) == 0;
-#if !CONFIG_IS_ENABLED(DM_MMC)
-	no_card = no_card || (mmc->cfg->ops->init == NULL);
-#endif
-	if (no_card) {
-		mmc->has_init = 0;
-#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_LIBCOMMON_SUPPORT)
-		printf("MMC: no card present\n");
-#endif
-		return -ENOMEDIUM;
-	}
 
 	if (mmc->has_init)
 		return 0;
@@ -1704,17 +1690,51 @@ int mmc_start_init(struct mmc *mmc)
 	if (err == -ETIMEDOUT) {
 		err = mmc_send_op_cond(mmc);
 
-		if (err) {
-#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_LIBCOMMON_SUPPORT)
-			printf("Card did not respond to voltage select!\n");
-#endif
-			return -EOPNOTSUPP;
-		}
+		if (err)
+			err = -EOPNOTSUPP;
 	}
 
-	if (!err)
+	if (err >= 0)
 		mmc->init_in_progress = 1;
 
+	return err;
+}
+
+int mmc_start_init(struct mmc *mmc)
+{
+	bool no_card;
+	int err;
+
+	/* we pretend there's no card when init is NULL */
+	err = mmc_getcd(mmc);
+	no_card = (err == 0) ? true : false;
+#if !CONFIG_IS_ENABLED(DM_MMC)
+	no_card = no_card || (mmc->cfg->ops->init == NULL);
+#endif
+	if (no_card) {
+		mmc->has_init = 0;
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_LIBCOMMON_SUPPORT)
+		printf("MMC: no card present\n");
+#endif
+		return -ENOMEDIUM;
+	}
+
+	if (mmc->has_init)
+		return 0;
+
+	if (mmc->init_in_progress)
+		goto out;
+
+	err = mmc_get_op_cond(mmc);
+
+	if (err < 0) {
+#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_LIBCOMMON_SUPPORT)
+		printf("Card did not respond to voltage select!\n");
+#endif
+	} else
+		mmc->init_in_progress = 1;
+
+out:
 	return err;
 }
 
