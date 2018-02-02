@@ -185,7 +185,7 @@ int board_mmc_getcd(struct mmc *mmc)
 		ret = !gpio_get_value(USDHC2_CD_GPIO);
 		break;
 	case USDHC3_BASE_ADDR:
-		ret = 1; /* eMMC/uSDHC3 has no CD GPIO */
+		ret = (mmc_get_op_cond(mmc) < 0) ? 0 : 1; /* eMMC/uSDHC3 has no CD GPIO */
 		break;
 	}
 
@@ -536,6 +536,15 @@ static bool is_rev_15_som(void)
 	return false;
 }
 
+static bool has_emmc(void)
+{
+	struct mmc *mmc;
+	mmc = find_mmc_device(1);
+        if (!mmc)
+                return 0;
+	return (mmc_get_op_cond(mmc) < 0) ? 0 : 1;
+}
+
 int checkboard(void)
 {
 	switch (board_type()) {
@@ -588,6 +597,10 @@ int board_late_init(void)
 
 	if (is_rev_15_som())
 		env_set("som_rev", "V15");
+
+	if (has_emmc())
+		env_set("has_emmc", "yes");
+
 #endif
 
 	return 0;
