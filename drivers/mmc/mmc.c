@@ -2810,13 +2810,12 @@ retry:
 	if (err == -ETIMEDOUT) {
 		err = mmc_send_op_cond(mmc);
 
-		if (err) {
-#if !defined(CONFIG_SPL_BUILD) || defined(CONFIG_SPL_LIBCOMMON_SUPPORT)
-			pr_err("Card did not respond to voltage select!\n");
-#endif
-			return -EOPNOTSUPP;
-		}
+		if (err)
+			err = -EOPNOTSUPP;
 	}
+
+	if (err >= 0)
+		mmc->init_in_progress = 1;
 
 	return err;
 }
