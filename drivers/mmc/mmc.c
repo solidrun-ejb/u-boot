@@ -1723,7 +1723,7 @@ int mmc_start_init(struct mmc *mmc)
 		return 0;
 
 	if (mmc->init_in_progress)
-		goto out;
+		return 0;
 
 	err = mmc_get_op_cond(mmc); 
 
@@ -1734,7 +1734,6 @@ int mmc_start_init(struct mmc *mmc)
 	} else
 		mmc->init_in_progress = 1;
 
-out:
 	return err;
 }
 
