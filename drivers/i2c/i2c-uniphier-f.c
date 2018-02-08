@@ -80,7 +80,7 @@ static int uniphier_fi2c_check_bus_busy(struct uniphier_fi2c_priv *priv)
 	u32 val;
 	int ret;
 
-	ret = readl_poll_timeout(&priv->regs->sr, val, !(val & I2C_SR_DB), 100);
+	ret = readl_poll_timeout(&priv->regs->sr, val, !(val & I2C_SR_DB), 100, 0);
 	if (ret < 0) {
 		dev_dbg(priv->dev, "error: device busy too long. reset...\n");
 		uniphier_fi2c_reset(priv);
@@ -121,7 +121,7 @@ static int wait_for_irq(struct uniphier_fi2c_priv *priv, u32 flags,
 	int ret;
 
 	ret = readl_poll_timeout(&priv->regs->intr, irq, irq & flags,
-				 priv->timeout);
+				 priv->timeout, 0);
 	if (ret < 0) {
 		dev_dbg(priv->dev, "error: time out\n");
 		return ret;

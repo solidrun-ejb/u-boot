@@ -91,7 +91,7 @@ static int sdhci_cdns_write_phy_reg(struct sdhci_cdns_plat *plat,
 	tmp |= SDHCI_CDNS_HRS04_WR;
 	writel(tmp, reg);
 
-	ret = readl_poll_timeout(reg, tmp, tmp & SDHCI_CDNS_HRS04_ACK, 10);
+	ret = readl_poll_timeout(reg, tmp, tmp & SDHCI_CDNS_HRS04_ACK, 10, 0);
 	if (ret)
 		return ret;
 

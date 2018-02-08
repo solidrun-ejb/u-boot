@@ -309,7 +309,7 @@ static int send_setup_packet(struct r8a66597 *r8a66597, struct usb_device *dev,
 	dcpctr = r8a66597_read(r8a66597, DCPCTR);
 	if ((dcpctr & PID) == PID_BUF) {
 		if (readw_poll_timeout(r8a66597->reg + DCPCTR, dcpctr,
-				       dcpctr & BSTS, 1000) < 0) {
+				       dcpctr & BSTS, 1000, 0) < 0) {
 			printf("DCPCTR BSTS timeout!\n");
 			return -ETIMEDOUT;
 		}
