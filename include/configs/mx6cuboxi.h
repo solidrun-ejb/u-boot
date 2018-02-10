@@ -22,7 +22,14 @@
 #define CONFIG_MXC_UART
 
 /* MMC Configs */
+
+#define CONFIG_SYS_FSL_USDHC_NUM	2
+
+#ifdef CONFIG_SPL_BOOT_DEVICE_MMC
+#define CONFIG_SYS_FSL_ESDHC_ADDR	USDHC3_BASE_ADDR
+#else
 #define CONFIG_SYS_FSL_ESDHC_ADDR	USDHC2_BASE_ADDR
+#endif
 
 /* SATA Configuration */
 #ifdef CONFIG_CMD_SATA
@@ -72,8 +79,6 @@
 
 #define CONFIG_MXC_UART_BASE	UART1_BASE
 #define CONSOLE_DEV	"ttymxc0"
-#define CONFIG_SYS_FSL_USDHC_NUM	2
-#define CONFIG_SYS_MMC_ENV_DEV		0	/* SDHC2 */
 
 #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
 #ifndef CONFIG_SPL_BUILD
@@ -127,12 +132,46 @@
 			"echo WARNING: Could not determine dtb to use; fi; \0" \
 	BOOTENV
 
+#ifdef CONFIG_CMD_MMC
+#ifdef CONFIG_SPL_BOOT_DEVICE_MMC
+#define BOOT_TARGET_DEVICES_MMC(func) func(MMC, mmc, 1)
+#else
+#define BOOT_TARGET_DEVICES_MMC(func) func(MMC, mmc, 0)
+#endif
+#else
+#define BOOT_TARGET_DEVICES_MMC(func)
+#endif
+
+#ifdef CONFIG_CMD_USB
+#define BOOT_TARGET_DEVICES_USB(func) func(USB, usb, 0)
+#else
+#define BOOT_TARGET_DEVICES_USB(func)
+#endif
+
+#if defined(CONFIG_CMD_PXE)
+#define BOOT_TARGET_DEVICES_PXE(func) func(PXE, pxe, na)
+#else
+#define BOOT_TARGET_DEVICES_PXE(func)
+#endif
+
+#if defined(CONFIG_CMD_SATA)
+#define BOOT_TARGET_DEVICES_SATA(func) func(SATA, sata, 0)
+#else
+#define BOOT_TARGET_DEVICES_SATA(func)
+#endif
+
+#if defined(CONFIG_CMD_DHCP)
+#define BOOT_TARGET_DEVICES_DHCP(func) func(DHCP, dhcp, na)
+#else
+#define BOOT_TARGET_DEVICES_DHCP(func)
+#endif
+
 #define BOOT_TARGET_DEVICES(func) \
-	func(MMC, mmc, 0) \
-	func(SATA, sata, 0) \
-	func(USB, usb, 0) \
-	func(PXE, pxe, na) \
-	func(DHCP, dhcp, na)
+        BOOT_TARGET_DEVICES_MMC(func) \
+        BOOT_TARGET_DEVICES_USB(func) \
+        BOOT_TARGET_DEVICES_SATA(func) \
+        BOOT_TARGET_DEVICES_PXE(func) \
+        BOOT_TARGET_DEVICES_DHCP(func)
 
 #include <config_distro_bootcmd.h>
 
@@ -158,6 +197,15 @@
 /* Environment organization */
 #define CONFIG_ENV_SIZE			(8 * 1024)
 #define CONFIG_ENV_OFFSET		(8 * 64 * 1024)
+
+#ifdef CONFIG_ENV_IS_IN_MMC
+#ifdef CONFIG_SPL_BOOT_DEVICE_MMC
+#define CONFIG_SYS_MMC_ENV_DEV		1
+#define CONFIG_SYS_MMC_ENV_PART		1
+#else
+#define CONFIG_SYS_MMC_ENV_DEV		0
+#endif
+#endif
 
 /* Reboot after 60 sec if bootcmd fails */
 /*
