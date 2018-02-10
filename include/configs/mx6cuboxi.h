@@ -196,7 +196,7 @@
 
 /* Environment organization */
 #define CONFIG_ENV_SIZE			(8 * 1024)
-#define CONFIG_ENV_OFFSET		(8 * 64 * 1024)
+#define CONFIG_ENV_OFFSET		(SZ_1M - CONFIG_ENV_SIZE)
 
 #ifdef CONFIG_ENV_IS_IN_MMC
 #ifdef CONFIG_SPL_BOOT_DEVICE_MMC
