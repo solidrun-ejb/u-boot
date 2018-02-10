@@ -470,6 +470,16 @@ int board_early_init_f(void)
 	return 0;
 }
 
+void board_boot_order(u32 *spl_boot_list)
+{
+	spl_boot_list[0] = spl_boot_device();
+#if defined(CONFIG_SPL_USB_SDP_SUPPORT)
+	spl_boot_list[1] = BOOT_DEVICE_BOARD;
+#elif defined(CONFIG_SPL_DFU_SUPPORT)
+	spl_boot_list[1] = BOOT_DEVICE_DFU;
+#endif
+}
+
 int board_init(void)
 {
 	int ret = 0;
