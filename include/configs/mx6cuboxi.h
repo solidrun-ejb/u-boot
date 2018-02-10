@@ -15,6 +15,9 @@
 
 #define CONFIG_IMX_THERMAL
 
+#define CONFIG_HW_WATCHDOG
+#define CONFIG_IMX_WATCHDOG
+
 #define CONFIG_SYS_MALLOC_LEN		(10 * SZ_1M)
 #define CONFIG_MXC_UART
 
@@ -144,6 +147,10 @@
 #define CONFIG_EXTRA_ENV_SETTINGS
 #endif /* CONFIG_SPL_BUILD */
 
+#ifdef CONFIG_CMD_NET
+#define CONFIG_TFTP_TSIZE
+#endif
+
 /* Physical Memory Map */
 #define CONFIG_NR_DRAM_BANKS           1
 #define CONFIG_SYS_SDRAM_BASE          MMDC0_ARB_BASE_ADDR
@@ -158,5 +165,14 @@
 /* Environment organization */
 #define CONFIG_ENV_SIZE			(8 * 1024)
 #define CONFIG_ENV_OFFSET		(8 * 64 * 1024)
+
+/* Reboot after 60 sec if bootcmd fails */
+/*
+#define CONFIG_RESET_TO_RETRY
+#define CONFIG_BOOT_RETRY_TIME 60
+
+#define CONFIG_BOOTCOUNT_LIMIT
+#define CONFIG_BOOTCOUNT_ENV
+*/
 
 #endif                         /* __MX6CUBOXI_CONFIG_H */
