@@ -22,6 +22,9 @@
 #define CONFIG_MXC_UART
 
 /* MMC Configs */
+#ifdef CONFIG_CMD_MMC
+#define CONFIG_SUPPORT_EMMC_BOOT
+#endif
 
 #define CONFIG_SYS_FSL_USDHC_NUM	2
 
