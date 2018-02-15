@@ -16,6 +16,16 @@ config NET_RANDOM_ETHADDR
 	  A new MAC address will be generated on every boot and it will
 	  not be added to the environment.
 
+config NET_RANDOM_ETHADDR_OUI 
+        string "OUI for random Ethernet device mac address"
+	depends on NET_RANDOM_ETHADDR
+        default "de:ad:be:00:00:00"
+        help
+          Ethernet MAC address to use as the reference OUI for additional 
+          random addresses. This allows generating relatively sane
+	  vendor identifiable MACs without stepping on properly fused
+	  devices. 
+
 config NETCONSOLE
 	bool "NetConsole support"
 	help
