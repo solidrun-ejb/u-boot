@@ -15,6 +15,7 @@
 #include <asm/cache.h>
 #include <asm/byteorder.h>	/* for nton* / ntoh* stuff */
 #include <linux/if_ether.h>
+#include <environment.h>
 
 #define DEBUG_LL_STATE 0	/* Link local state machine changes */
 #define DEBUG_DEV_PKT 0		/* Packets or info directed to the device */
@@ -825,10 +826,16 @@ static inline int is_valid_ethaddr(const u8 *addr)
  */
 static inline void net_random_ethaddr(uchar *addr)
 {
-	int i;
+	int i, j = 0;
 	unsigned int seed = get_timer(0);
 
-	for (i = 0; i < 6; i++)
+#if defined(CONFIG_NET_RANDOM_ETHADDR_OUI) && !defined(DO_DEPS_ONLY)
+	eth_parse_enetaddr(CONFIG_NET_RANDOM_ETHADDR_OUI, addr);
+	if (is_valid_ethaddr(addr))
+		j = 3;
+#endif	
+
+	for (i = j; i < 6; i++)
 		addr[i] = rand_r(&seed);
 
 	addr[0] &= 0xfe;	/* clear multicast bit */
