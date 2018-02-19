@@ -24,6 +24,7 @@
 #include <asm/mach-imx/iomux-v3.h>
 #include <asm/mach-imx/sata.h>
 #include <asm/mach-imx/video.h>
+#include <environment.h>
 #include <mmc.h>
 #include <fsl_esdhc.h>
 #include <malloc.h>
@@ -585,6 +586,29 @@ out:
 int board_late_init(void)
 {
 #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+	unsigned char enetaddr[6];
+	int ret;
+
+	ret = eth_env_get_enetaddr("ethaddr", enetaddr);
+	if (ret)
+		goto board_type;
+
+	imx_get_mac_from_fuse(0, enetaddr);
+
+        if (is_valid_ethaddr(enetaddr)) {
+                eth_env_set_enetaddr("ethaddr", enetaddr);
+#ifdef CONFIG_NET_RANDOM_ETHADDR
+	} else {
+		net_random_ethaddr(enetaddr);
+                eth_env_set_enetaddr("ethaddr", enetaddr);
+	}
+#endif
+#ifndef CONFIG_ENV_IS_NOWHERE
+	env_save();
+#endif
+
+board_type:
+
 	switch (board_type()) {
 	case CUBOXI:
 		env_set("board_name", "CUBOXI");
