@@ -139,9 +139,9 @@
 
 #ifdef CONFIG_CMD_MMC
 #ifdef CONFIG_SPL_BOOT_DEVICE_MMC
-#define BOOT_TARGET_DEVICES_MMC(func) func(MMC, mmc, 1)
+#define BOOT_TARGET_DEVICES_MMC(func) func(MMC, mmc, 1) func(MMC, mmc, 0)
 #else
-#define BOOT_TARGET_DEVICES_MMC(func) func(MMC, mmc, 0)
+#define BOOT_TARGET_DEVICES_MMC(func) func(MMC, mmc, 0) func(MMC, mmc, 1)
 #endif
 #else
 #define BOOT_TARGET_DEVICES_MMC(func)
