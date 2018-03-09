@@ -11,7 +11,7 @@
 
 void spl_board_init(void)
 {
-#if CONFIG_SPL_BOOT_DEVICE == SPL_BOOT_SPI_NOR_FLASH
+#ifdef  CONFIG_MVEBU_SPL_BOOT_DEVICE_SPI
 	u32 *bootrom_save = (u32 *)CONFIG_SPL_BOOTROM_SAVE;
 	u32 *regs = (u32 *)(*bootrom_save);
 

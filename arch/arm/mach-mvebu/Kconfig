@@ -72,8 +72,14 @@ choice
 	optional
 
 config TARGET_CLEARFOG
-	bool "Support ClearFog"
+	bool "Support ClearFog Pro"
 	select 88F6820
+	select BOARD_SUPPORTS_MULTIBOOT
+	select BOARD_SUPPORTS_MMC_BOOT
+	select BOARD_SUPPORTS_SATA_BOOT
+	select BOARD_SUPPORTS_SDHC_BOOT
+	select BOARD_SUPPORTS_SPI_BOOT
+	select BOARD_SUPPORTS_UART_BOOT
 
 config TARGET_NAEBA
 	bool "Support Naeba machine"
@@ -99,6 +105,10 @@ config TARGET_DB_88F6820_AMC
 config TARGET_TURRIS_OMNIA
 	bool "Support Turris Omnia"
 	select 88F6820
+	select BOARD_SUPPORTS_MULTIBOOT
+	select BOARD_SUPPORTS_MMC_BOOT
+	select BOARD_SUPPORTS_SDHC_BOOT
+	select BOARD_SUPPORTS_SPI_BOOT
 
 config TARGET_MVEBU_ARMADA_8K
 	bool "Support Armada 7k/8k platforms"
@@ -127,6 +137,10 @@ config TARGET_THEADORABLE
 config TARGET_CONTROLCENTERDC
 	bool "Support CONTROLCENTERDC"
 	select 88F6820
+	select BOARD_SUPPORTS_MULTIBOOT
+	select BOARD_SUPPORTS_MMC_BOOT
+	select BOARD_SUPPORTS_SDHC_BOOT
+	select BOARD_SUPPORTS_SPI_BOOT
 
 endchoice
 
@@ -173,20 +187,77 @@ config SYS_VENDOR
 config SYS_SOC
 	default "mvebu"
 
-if TARGET_TURRIS_OMNIA
+config BOARD_SUPPORTS_MULTIBOOT
+        bool
+        default  n
+
+config BOARD_SUPPORTS_MMC_BOOT
+        bool
+        default  n
+
+config BOARD_SUPPORTS_NAND_BOOT
+        bool
+        default  n
+
+config BOARD_SUPPORTS_SATA_BOOT
+        bool
+        default  n
+
+config BOARD_SUPPORTS_SDHC_BOOT
+        bool
+        default  n
+
+config BOARD_SUPPORTS_SPI_BOOT
+        bool
+        default  n
+
+config BOARD_SUPPORTS_UART_BOOT
+        bool
+        default  n
 
 choice
-	prompt "Turris Omnia boot method"
+	prompt "MVEBU SPL primary boot device"
+	depends on ARMADA_32BIT && BOARD_SUPPORTS_MULTIBOOT
 
-config TURRIS_OMNIA_SPL_BOOT_DEVICE_SPI
-	bool "SPI NOR flash"
+config MVEBU_SPL_BOOT_DEVICE_MMC
+	bool "MMC"
+	depends on BOARD_SUPPORTS_MMC_BOOT
+	select SPL_MMC_SUPPORT
+	select SPL_LIBDISK_SUPPORT
 
-config TURRIS_OMNIA_SPL_BOOT_DEVICE_MMC
-	bool "SDIO/MMC card"
+config MVEBU_SPL_BOOT_DEVICE_NAND
+	bool "NAND"
+	depends on ARMADA_38X
+	depends on BOARD_SUPPORTS_NAND_BOOT
+	select SPL_NAND_SUPPORT
+
+config MVEBU_SPL_BOOT_DEVICE_SATA
+	bool "SATA"
+	depends on BOARD_SUPPORTS_SATA_BOOT
+	select SPL_SATA_SUPPORT
+	select SPL_LIBDISK_SUPPORT
+
+# This is the same as MMC and only is a marker for different
+# environment storage since SDHC does not have hardware partions.
+config MVEBU_SPL_BOOT_DEVICE_SDHC
+	bool "SDHC"
+	depends on BOARD_SUPPORTS_SDHC_BOOT
+	select SPL_MMC_SUPPORT
+	select SPL_LIBDISK_SUPPORT
+
+config MVEBU_SPL_BOOT_DEVICE_SPI
+	bool "SPI"
+	depends on BOARD_SUPPORTS_SPI_BOOT
+	select SPL_SPI_FLASH_SUPPORT
+	select SPL_SPI_SUPPORT
+	select SPL_MTD_SUPPORT
+
+config MVEBU_SPL_BOOT_DEVICE_UART
+	bool "UART"
+	depends on BOARD_SUPPORTS_UART_BOOT
+	select SPL_SERIAL_SUPPORT
 
 endchoice
-
-endif
 
 config MVEBU_EFUSE
 	bool "Enable eFuse support"

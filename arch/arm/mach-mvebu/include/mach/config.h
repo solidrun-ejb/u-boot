@@ -43,7 +43,21 @@
 
 /* Add target to build it automatically upon "make" */
 #ifdef CONFIG_SPL
+#if defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_MMC)
+#define CONFIG_BUILD_TARGET	"u-boot-spl-mmc.kwb"
+#elif defined (CONFIG_MVEBU_SPL_BOOT_DEVICE_NAND)
+#define CONFIG_BUILD_TARGET	"u-boot-spl-nand.kwb"
+#elif defined (CONFIG_MVEBU_SPL_BOOT_DEVICE_SATA)
+#define CONFIG_BUILD_TARGET	"u-boot-spl-sata.kwb"
+#elif defined (CONFIG_MVEBU_SPL_BOOT_DEVICE_SDHC)
+#define CONFIG_BUILD_TARGET	"u-boot-spl-sdhc.kwb"
+#elif defined (CONFIG_MVEBU_SPL_BOOT_DEVICE_SPI)
+#define CONFIG_BUILD_TARGET	"u-boot-spl-spi.kwb"
+#elif defined (CONFIG_MVEBU_SPL_BOOT_DEVICE_UART)
+#define CONFIG_BUILD_TARGET	"u-boot-spl-uart.kwb"
+#else
 #define CONFIG_BUILD_TARGET	"u-boot-spl.kwb"
+#endif
 #endif
 
 /* end of 16M scrubbed by training in bootrom */
