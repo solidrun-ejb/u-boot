@@ -70,6 +70,14 @@ static u32 get_boot_device(void)
 	};
 }
 
+static void disable_debug_i2c_slave(void)
+{
+	u32 val;
+	val = readl(MVEBU_REGISTER(0x1108c));
+	val &= 0xfffbffff;
+	writel(val, MVEBU_REGISTER(0x1108c));
+}
+
 u32 spl_boot_device(void)
 {
 	return get_boot_device();
@@ -131,7 +139,9 @@ void board_init_f(ulong dummy)
 	preloader_console_init();
 
 	timer_init();
-
+#ifdef CONFIG_ARMADA_38X
+	disable_debug_i2c_slave();
+#endif
 	/* Armada 375 does not support SerDes and DDR3 init yet */
 #if !defined(CONFIG_ARMADA_375)
 	/* First init the serdes PHY's */
