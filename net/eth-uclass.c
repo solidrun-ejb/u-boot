@@ -515,14 +515,31 @@ static int eth_post_probe(struct udevice *dev)
 		       dev->name);
 	} else if (is_zero_ethaddr(pdata->enetaddr) ||
 		   !is_valid_ethaddr(pdata->enetaddr)) {
+#ifdef NET_SEQ_MACADDR_FROM_ENV
+		if (dev->seq > 1)
+			eth_env_get_enetaddr_by_index("eth", dev->seq - 1, env_enetaddr);
+		if (!is_zero_ethaddr(env_enetaddr)) {
+			memcpy(pdata->enetaddr, env_enetaddr, ARP_HLEN);
+			net_increment_ethaddr(pdata->enetaddr);
+			printf("\nWarning: %s (eth%d) using incremented MAC address - %pM\n",
+			       dev->name, dev->seq, pdata->enetaddr);
+		} else
+#endif
+		{
 #ifdef CONFIG_NET_RANDOM_ETHADDR
-		net_random_ethaddr(pdata->enetaddr);
-		printf("\nWarning: %s (eth%d) using random MAC address - %pM\n",
-		       dev->name, dev->seq, pdata->enetaddr);
+			net_random_ethaddr(pdata->enetaddr);
+			printf("\nWarning: %s (eth%d) using random MAC address - %pM\n",
+			       dev->name, dev->seq, pdata->enetaddr);
 #else
-		printf("\nError: %s address not set.\n",
-		       dev->name);
-		return -EINVAL;
+			printf("\nError: %s address not set.\n",
+			       dev->name);
+			return -EINVAL;
+#endif
+		}
+
+#ifdef NET_RANDOM_ETHADDR_TO_ENV
+		if (!is_zero_ethaddr(pdata->enetaddr))
+			eth_env_set_enetaddr_by_index("eth", dev->seq, pdata->enetaddr);
 #endif
 	}
 

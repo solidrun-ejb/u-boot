@@ -803,6 +803,24 @@ static inline int is_valid_ethaddr(const u8 *addr)
 }
 
 /**
+ * net_increment_ethaddr - Increment an Ethernet address
+ * @addr: Pointer to a six-byte array containing the Ethernet address
+ *
+ * Increment an Ethernet address (MAC)
+ */
+static inline void net_increment_ethaddr(uchar *addr)
+{
+	int i;
+
+	for (i = 5; i > 2; i--) {
+		if (addr[i]++ == 0xFF)
+			addr[i] = 0x00;
+		else
+			break;
+	}
+}
+
+/**
  * net_random_ethaddr - Generate software assigned random Ethernet address
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
