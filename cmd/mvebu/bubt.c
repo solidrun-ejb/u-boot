@@ -171,7 +171,6 @@ static ulong get_load_addr(void)
 /********************************************************************
  *     eMMC services
  ********************************************************************/
-#ifdef CONFIG_DM_MMC
 static int mmc_burn_image(size_t image_size)
 {
 	struct mmc	*mmc;
@@ -183,6 +182,9 @@ static int mmc_burn_image(size_t image_size)
 #ifdef CONFIG_BLK
 	struct blk_desc *blk_desc;
 #endif
+	__maybe_unused int part;
+	__maybe_unused char original_part;
+
 	mmc = find_mmc_device(mmc_dev_num);
 	if (!mmc) {
 		printf("No SD/MMC/eMMC card found\n");
@@ -196,13 +198,26 @@ static int mmc_burn_image(size_t image_size)
 		return err;
 	}
 
-#ifdef CONFIG_SYS_MMC_ENV_PART
-	if (mmc->part_num != CONFIG_SYS_MMC_ENV_PART) {
-		err = mmc_switch_part(mmc_dev_num, CONFIG_SYS_MMC_ENV_PART);
-		if (err) {
-			printf("MMC partition switch failed\n");
-			return err;
-		}
+#ifdef CONFIG_SUPPORT_EMMC_BOOT
+#ifdef CONFIG_BLK
+        original_part = mmc_get_blk_desc(mmc)->hwpart;
+#else
+        original_part = mmc->block_dev.hwpart;
+#endif
+
+	part = (mmc->part_config >> 3) & PART_ACCESS_MASK;
+
+	if (part == 7)
+		part = 0;
+
+	if (CONFIG_IS_ENABLED(MMC_TINY))
+		err = mmc_switch_part(mmc, part);
+	else
+		err = blk_dselect_hwpart(mmc_get_blk_desc(mmc), part);
+
+	if (err) {
+		printf("MMC partition switch failed\n");
+		return err;
 	}
 #endif
 
@@ -227,9 +242,9 @@ static int mmc_burn_image(size_t image_size)
 	if (image_size % mmc->block_dev.blksz)
 		blk_count += 1;
 
-	blk_written = mmc->block_dev.block_write(mmc_dev_num,
-						 start_lba, blk_count,
-						 (void *)get_load_addr());
+	blk_written = blk_write_devnum(IF_TYPE_MMC, mmc_dev_num,
+				       start_lba, blk_count,
+				       (void *)get_load_addr());
 #endif /* CONFIG_BLK */
 	if (blk_written != blk_count) {
 		printf("Error - written %#lx blocks\n", blk_written);
@@ -237,9 +252,14 @@ static int mmc_burn_image(size_t image_size)
 	}
 	printf("Done!\n");
 
-#ifdef CONFIG_SYS_MMC_ENV_PART
-	if (mmc->part_num != CONFIG_SYS_MMC_ENV_PART)
-		mmc_switch_part(mmc_dev_num, mmc->part_num);
+#ifdef CONFIG_SUPPORT_EMMC_BOOT
+	if (CONFIG_IS_ENABLED(MMC_TINY))
+		err = mmc_switch_part(mmc, original_part);
+	else
+		err = blk_dselect_hwpart(mmc_get_blk_desc(mmc), original_part);
+
+	if (err)
+		printf("MMC failed to switch back to original partition\n");
 #endif
 
 	return 0;
@@ -282,22 +302,6 @@ static int is_mmc_active(void)
 {
 	return 1;
 }
-#else /* CONFIG_DM_MMC */
-static int mmc_burn_image(size_t image_size)
-{
-	return -ENODEV;
-}
-
-static size_t mmc_read_file(const char *file_name)
-{
-	return 0;
-}
-
-static int is_mmc_active(void)
-{
-	return 0;
-}
-#endif /* CONFIG_DM_MMC */
 
 /********************************************************************
  *     SPI services
