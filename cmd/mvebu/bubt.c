@@ -11,6 +11,7 @@
 #include <vsprintf.h>
 #include <errno.h>
 #include <dm.h>
+#include <net.h>
 
 #include <spi_flash.h>
 #include <spi.h>
@@ -125,7 +126,7 @@ static int mmc_burn_image(size_t image_size)
 	mmc = find_mmc_device(mmc_dev_num);
 	if (!mmc) {
 		printf("No SD/MMC/eMMC card found\n");
-		return -ENOMEDIUM;
+		return ENOMEDIUM;
 	}
 
 	err = mmc_init(mmc);
@@ -157,7 +158,7 @@ static int mmc_burn_image(size_t image_size)
 	blk_desc = mmc_get_blk_desc(mmc);
 	if (!blk_desc) {
 		printf("Error - failed to obtain block descriptor\n");
-		return -ENODEV;
+		return ENODEV;
 	}
 	blk_written = blk_dwrite(blk_desc, start_lba, blk_count,
 				 (void *)get_load_addr());
@@ -172,7 +173,7 @@ static int mmc_burn_image(size_t image_size)
 #endif /* CONFIG_BLK */
 	if (blk_written != blk_count) {
 		printf("Error - written %#lx blocks\n", blk_written);
-		return -ENOSPC;
+		return ENOSPC;
 	}
 	printf("Done!\n");
 
@@ -209,7 +210,7 @@ static size_t mmc_read_file(const char *file_name)
 		return 0;
 	}
 
-	/* Perfrom file read */
+	/* Perform file read */
 	rc = fs_read(file_name, get_load_addr(), 0, 0, &act_read);
 	if (rc)
 		return 0;
@@ -255,7 +256,7 @@ static int spi_burn_image(size_t image_size)
 				CONFIG_SF_DEFAULT_MODE);
 	if (!flash) {
 		printf("Failed to probe SPI Flash\n");
-		return -ENOMEDIUM;
+		return ENOMEDIUM;
 	}
 
 #ifdef CONFIG_SPI_FLASH_PROTECTION
@@ -294,7 +295,7 @@ static int is_spi_active(void)
 #else /* CONFIG_SPI_FLASH */
 static int spi_burn_image(size_t image_size)
 {
-	return -ENODEV;
+	return ENODEV;
 }
 
 static int is_spi_active(void)
@@ -316,7 +317,7 @@ static int nand_burn_image(size_t image_size)
 	mtd = get_nand_dev_by_index(nand_curr_device);
 	if (!mtd) {
 		puts("\nno devices available\n");
-		return -ENOMEDIUM;
+		return ENOMEDIUM;
 	}
 	block_size = mtd->erasesize;
 
@@ -353,7 +354,7 @@ static int is_nand_active(void)
 #else /* CONFIG_CMD_NAND */
 static int nand_burn_image(size_t image_size)
 {
-	return -ENODEV;
+	return ENODEV;
 }
 
 static int is_nand_active(void)
@@ -467,7 +468,7 @@ static int bubt_write_file(struct bubt_dev *dst, size_t image_size)
 {
 	if (!dst->write) {
 		printf("Error: Write not supported on device %s\n", dst->name);
-		return -ENOTSUPP;
+		return ENOTSUPP;
 	}
 
 	return dst->write(image_size);
@@ -503,7 +504,7 @@ static int check_image_header(void)
 	if (hdr->magic != MAIN_HDR_MAGIC) {
 		printf("ERROR: Bad MAGIC 0x%08x != 0x%08x\n",
 		       hdr->magic, MAIN_HDR_MAGIC);
-		return -ENOEXEC;
+		return ENOEXEC;
 	}
 
 	/* The checksum value is discarded from checksum calculation */
@@ -513,7 +514,7 @@ static int check_image_header(void)
 	if (checksum != checksum_ref) {
 		printf("Error: Bad Image checksum. 0x%x != 0x%x\n",
 		       checksum, checksum_ref);
-		return -ENOEXEC;
+		return ENOEXEC;
 	}
 
 	/* Restore the checksum before writing */
@@ -551,7 +552,7 @@ static int check_image_header(void)
 	/* only supports image version 3.5 and 3.6 */
 	if (version != IMAGE_VERSION_3_5_0 && version != IMAGE_VERSION_3_6_0) {
 		printf("Error: Unsupported Image version = 0x%08x\n", version);
-		return -ENOEXEC;
+		return ENOEXEC;
 	}
 	/* validate images hash value */
 	for (image_num = 0; image_num < num_of_image; image_num++) {
@@ -603,7 +604,7 @@ static int check_image_header(void)
 		default:
 			printf("Error: Unsupported hash_algorithm_id = %d\n",
 			       hash_algorithm_id);
-			return -ENOEXEC;
+			return ENOEXEC;
 		}
 		if (image_num == 0)
 			memcpy(hash_value, internal_hash,
@@ -611,7 +612,7 @@ static int check_image_header(void)
 		if (memcmp(hash_value, hash_output, hash_algorithm_id) != 0) {
 			printf("Error: Image_%d checksum is not correct\n",
 			       image_num);
-			return -ENOEXEC;
+			return ENOEXEC;
 		}
 	}
 	printf("Image checksum...OK!\n");
@@ -623,7 +624,7 @@ static int check_image_header(void)
 static int check_image_header(void)
 {
 	printf("bubt cmd does not support this SoC device or family!\n");
-	return -ENOEXEC;
+	return ENOEXEC;
 }
 #endif
 
@@ -736,11 +737,11 @@ int do_bubt_cmd(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	dst = find_bubt_dev(dst_dev_name);
 	if (!dst) {
 		printf("Error: Unknown destination \"%s\"\n", dst_dev_name);
-		return -EINVAL;
+		return EINVAL;
 	}
 
 	if (!bubt_is_dev_active(dst))
-		return -ENODEV;
+		return ENODEV;
 
 	/* Figure out the source device */
 	src = find_bubt_dev(src_dev_name);
@@ -750,14 +751,14 @@ int do_bubt_cmd(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	}
 
 	if (!bubt_is_dev_active(src))
-		return -ENODEV;
+		return ENODEV;
 
 	printf("Burning U-BOOT image \"%s\" from \"%s\" to \"%s\"\n",
 	       net_boot_file_name, src->name, dst->name);
 
 	image_size = bubt_read_file(src);
 	if (!image_size)
-		return -EIO;
+		return EIO;
 
 	err = bubt_verify(image_size);
 	if (err)
