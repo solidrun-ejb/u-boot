@@ -55,6 +55,9 @@ int arch_fixup_fdt(void *blob)
 	ret = fdt_fixup_memory_banks(blob, start, size, CONFIG_NR_DRAM_BANKS);
 	if (ret)
 		return ret;
+#ifdef FDT_SET_MACADDR_FROM_ENV
+	fdt_fixup_ethernet(blob);
+#endif
 #endif
 
 #ifdef CONFIG_ARMV8_SPIN_TABLE
