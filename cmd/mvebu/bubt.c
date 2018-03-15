@@ -446,11 +446,12 @@ static int is_nand_active(void)
 /********************************************************************
  *     USB services
  ********************************************************************/
-#if defined(CONFIG_USB_STORAGE) && defined(CONFIG_BLK)
+#if defined(CONFIG_USB_STORAGE)
 static size_t usb_read_file(const char *file_name)
 {
 	loff_t act_read = 0;
-	struct udevice *dev;
+	__maybe_unused struct udevice *dev;
+	__maybe_unused int usb_dev;
 	int rc;
 
 	usb_stop();
@@ -461,11 +462,15 @@ static size_t usb_read_file(const char *file_name)
 	}
 
 	/* Try to recognize storage devices immediately */
+#ifdef CONFIG_BLK
 	blk_first_device(IF_TYPE_USB, &dev);
 	if (!dev) {
 		printf("Error: USB storage device not found\n");
 		return 0;
 	}
+#else
+	usb_dev = usb_stor_scan(1);
+#endif	
 
 	/* Always load from usb 0 */
 	if (fs_set_blk_dev("usb", "0", FS_TYPE_ANY)) {
