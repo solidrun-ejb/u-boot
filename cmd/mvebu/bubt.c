@@ -309,15 +309,31 @@ static int is_mmc_active(void)
 #ifdef CONFIG_SPI_FLASH
 static int spi_burn_image(size_t image_size)
 {
+        unsigned int bus = CONFIG_SF_DEFAULT_BUS;
+        unsigned int cs = CONFIG_SF_DEFAULT_CS;
+        unsigned int speed = CONFIG_SF_DEFAULT_SPEED;
+        unsigned int mode = CONFIG_SF_DEFAULT_MODE;
 	int ret;
+#ifdef CONFIG_DM_SPI_FLASH
+        struct udevice *new;
+        /* In DM mode defaults will be taken from DT */
+        speed = 0, mode = 0;
+#endif
 	struct spi_flash *flash;
 	u32 erase_bytes;
 
-	/* Probe the SPI bus to get the flash device */
-	flash = spi_flash_probe(CONFIG_ENV_SPI_BUS,
-				CONFIG_ENV_SPI_CS,
-				CONFIG_SF_DEFAULT_SPEED,
-				CONFIG_SF_DEFAULT_MODE);
+#ifdef CONFIG_DM_SPI_FLASH
+        ret = spi_flash_probe_bus_cs(bus, cs, speed, mode, &new);
+        if (ret) {
+                printf("Failed to initialize SPI flash at %u:%u (error %d)\n",
+                       bus, cs, ret);
+                return ENODEV;
+        }
+
+        flash = dev_get_uclass_priv(new);
+#else
+        flash = spi_flash_probe(bus, cs, speed, mode);
+#endif
 	if (!flash) {
 		printf("Failed to probe SPI Flash\n");
 		return ENOMEDIUM;
