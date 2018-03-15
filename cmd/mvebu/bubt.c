@@ -127,6 +127,24 @@ struct mvebu_main_hdr_v1 {
         uint8_t  ext;                   /* 0x1E      */
         uint8_t  checksum;              /* 0x1F      */
 };
+
+#define MVEBU_BOOT_MODE_MAX	8
+
+struct mvebu_boot_mode {
+        unsigned int id;
+        const char *name;
+};
+
+struct mvebu_boot_mode mvebu_boot_modes[MVEBU_BOOT_MODE_MAX] = {
+        { 0x4D, "i2c"  },
+        { 0x5A, "spi"  },
+        { 0x8B, "nand" },
+        { 0x78, "sata" },
+        { 0x9C, "pex"  },
+        { 0x69, "uart" },
+        { 0xAE, "mmc" }, /* Note this is actually sdio but is changed to mmc */
+        {},
+};
 #endif /* CONFIG_ARMADA_XXX */
 
 struct bubt_dev {
@@ -662,6 +680,25 @@ static int check_image_header(void)
 	return 0;
 }
 #elif defined(CONFIG_ARMADA_38X)
+static int check_boot_mode(struct bubt_dev *dst)
+{
+	struct mvebu_main_hdr_v1 *hdr =
+			(struct mvebu_main_hdr_v1 *)get_load_addr();
+        struct mvebu_main_hdr_v0 *main_hdr = (struct mvebu_main_hdr_v0 *)hdr;
+
+	int mode;
+
+	for (mode = 0; mode < MVEBU_BOOT_MODE_MAX; mode++) {
+		if (strcmp(mvebu_boot_modes[mode].name, dst->name) == 0)
+			break;
+	}
+
+	if (mvebu_boot_modes[mode].id == main_hdr->blockid)
+		return 0;
+
+	return ENOEXEC;
+}
+
 static unsigned int image_version(void *header)
 {
         unsigned char *ptr = header;
@@ -722,7 +759,7 @@ static int check_image_header(void)
 }
 #endif
 
-static int bubt_verify(size_t image_size)
+static int bubt_verify(size_t image_size, struct bubt_dev *dst)
 {
 	int err;
 
@@ -732,6 +769,14 @@ static int bubt_verify(size_t image_size)
 		printf("Error: Image header verification failed\n");
 		return err;
 	}
+
+#ifdef MVEBU_BOOT_MODE_MAX
+	err = check_boot_mode(dst);
+	if (err) {
+		printf("Error: Image not built to boot destination device\n");
+		return err;
+	}
+#endif
 
 	return 0;
 }
@@ -854,7 +899,7 @@ int do_bubt_cmd(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	if (!image_size)
 		return EIO;
 
-	err = bubt_verify(image_size);
+	err = bubt_verify(image_size, dst);
 	if (err)
 		return err;
 
