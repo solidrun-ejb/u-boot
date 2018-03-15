@@ -71,19 +71,35 @@ static ulong spl_spi_fit_read(struct spl_load_info *load, ulong sector,
 static int spl_spi_load_image(struct spl_image_info *spl_image,
 			      struct spl_boot_device *bootdev)
 {
+        unsigned int bus = CONFIG_SF_DEFAULT_BUS;
+        unsigned int cs = CONFIG_SF_DEFAULT_CS;
+        unsigned int speed = CONFIG_SF_DEFAULT_SPEED;
+        unsigned int mode = CONFIG_SF_DEFAULT_MODE;
 	int err = 0;
 	unsigned payload_offs = CONFIG_SYS_SPI_U_BOOT_OFFS;
+#ifdef CONFIG_DM_SPI_FLASH
+        struct udevice *new;
+        /* In DM mode defaults will be taken from DT */
+        speed = 0, mode = 0;
+#endif
 	struct spi_flash *flash;
 	struct image_header *header;
 
 	/*
 	 * Load U-Boot image from SPI flash into RAM
 	 */
+#ifdef CONFIG_DM_SPI_FLASH
+        err = spi_flash_probe_bus_cs(bus, cs, speed, mode, &new);
+        if (err) {
+                printf("Failed to initialize SPI flash at %u:%u (error %d)\n",
+                       bus, cs, err);
+                return -ENODEV;
+        }
 
-	flash = spi_flash_probe(CONFIG_SF_DEFAULT_BUS,
-				CONFIG_SF_DEFAULT_CS,
-				CONFIG_SF_DEFAULT_SPEED,
-				CONFIG_SF_DEFAULT_MODE);
+        flash = dev_get_uclass_priv(new);
+#else
+	flash = spi_flash_probe(bus, cs, speed, mode);
+#endif
 	if (!flash) {
 		puts("SPI probe failed.\n");
 		return -ENODEV;
