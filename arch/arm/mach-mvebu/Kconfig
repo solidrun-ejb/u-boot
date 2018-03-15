@@ -218,24 +218,28 @@ config BOARD_SUPPORTS_UART_BOOT
 choice
 	prompt "MVEBU SPL primary boot device"
 	depends on ARMADA_32BIT && BOARD_SUPPORTS_MULTIBOOT
+	optional
 
 config MVEBU_SPL_BOOT_DEVICE_MMC
 	bool "MMC"
 	depends on BOARD_SUPPORTS_MMC_BOOT
 	select SPL_MMC_SUPPORT
 	select SPL_LIBDISK_SUPPORT
+	select ENV_IS_ON_SELECTED_BOOT_DEVICE
 
 config MVEBU_SPL_BOOT_DEVICE_NAND
 	bool "NAND"
 	depends on ARMADA_38X
 	depends on BOARD_SUPPORTS_NAND_BOOT
 	select SPL_NAND_SUPPORT
+	select ENV_IS_ON_SELECTED_BOOT_DEVICE
 
 config MVEBU_SPL_BOOT_DEVICE_SATA
 	bool "SATA"
 	depends on BOARD_SUPPORTS_SATA_BOOT
 	select SPL_SATA_SUPPORT
 	select SPL_LIBDISK_SUPPORT
+	select ENV_IS_ON_SELECTED_BOOT_DEVICE
 
 # This is the same as MMC and only is a marker for different
 # environment storage since SDHC does not have hardware partions.
@@ -244,6 +248,7 @@ config MVEBU_SPL_BOOT_DEVICE_SDHC
 	depends on BOARD_SUPPORTS_SDHC_BOOT
 	select SPL_MMC_SUPPORT
 	select SPL_LIBDISK_SUPPORT
+	select ENV_IS_ON_SELECTED_BOOT_DEVICE
 
 config MVEBU_SPL_BOOT_DEVICE_SPI
 	bool "SPI"
@@ -251,11 +256,13 @@ config MVEBU_SPL_BOOT_DEVICE_SPI
 	select SPL_SPI_FLASH_SUPPORT
 	select SPL_SPI_SUPPORT
 	select SPL_MTD_SUPPORT
+	select ENV_IS_ON_SELECTED_BOOT_DEVICE
 
 config MVEBU_SPL_BOOT_DEVICE_UART
 	bool "UART"
 	depends on BOARD_SUPPORTS_UART_BOOT
 	select SPL_SERIAL_SUPPORT
+	select ENV_IS_ON_SELECTED_BOOT_DEVICE
 
 endchoice
 

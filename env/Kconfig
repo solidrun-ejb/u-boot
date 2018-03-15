@@ -1,12 +1,17 @@
 menu "Environment"
+config ENV_IS_ON_SELECTED_BOOT_DEVICE
+	bool
+	default y if !ARCH_MVEBU
 
 choice
+	depends on ENV_IS_ON_SELECTED_BOOT_DEVICE
 	prompt "Select the location of the environment"
 	default ENV_IS_IN_MMC if ARCH_SUNXI
 	default ENV_IS_IN_MMC if ARCH_EXYNOS4
 	default ENV_IS_IN_MMC if MX6SX || MX7D
 	default ENV_IS_IN_MMC if TEGRA30 || TEGRA124
 	default ENV_IS_IN_MMC if TEGRA_ARMV8_COMMON
+	default ENV_IS_IN_MMC if MVEBU_SPL_BOOT_DEVICE_MMC || MVEBU_SPL_BOOT_DEVICE_SDHC
 	default ENV_IS_IN_FLASH if ARCH_CINTEGRATOR
 	default ENV_IS_IN_FLASH if ARCH_INTEGRATOR_CP
 	default ENV_IS_IN_FLASH if M548x || M547x || M5282 || MCF547x_8x
@@ -14,6 +19,7 @@ choice
 	default ENV_IS_IN_FLASH if MPC86xx || MPC83xx
 	default ENV_IS_IN_FLASH if ARCH_MPC8572 || ARCH_MPC8548 || ARCH_MPC8641
 	default ENV_IS_IN_FLASH if SH && !CPU_SH4
+	default ENV_IS_IN_NAND if MVEBU_SPL_BOOT_DEVICE_NAND
 	default ENV_IS_IN_SPI_FLASH if ARMADA_XP
 	default ENV_IS_IN_SPI_FLASH if INTEL_BAYTRAIL
 	default ENV_IS_IN_SPI_FLASH if INTEL_BRASWELL
@@ -21,8 +27,10 @@ choice
 	default ENV_IS_IN_SPI_FLASH if NORTHBRIDGE_INTEL_IVYBRIDGE
 	default ENV_IS_IN_SPI_FLASH if INTEL_QUARK
 	default ENV_IS_IN_SPI_FLASH if INTEL_QUEENSBAY
+	default ENV_IS_IN_SPI_FLASH if MVEBU_SPL_BOOT_DEVICE_SPI
 	default ENV_IS_IN_FAT if ARCH_BCM283X
 	default ENV_IS_IN_FAT if MMC_OMAP_HS && TI_COMMON_CMD_OPTIONS
+	default ENV_IS_IN_FAT if MVEBU_SPL_BOOT_DEVICE_SATA
 	default ENV_IS_NOWHERE
 	help
 	  At present the environment can be stored in only one place. Use this
