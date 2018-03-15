@@ -404,6 +404,7 @@ int arch_cpu_init(void)
 	 */
 
 	if (mvebu_soc_family() == MVEBU_SOC_A38X) {
+		unsigned int val;
 		/*
 		 * To fully release / unlock this area from cache, we need
 		 * to flush all caches and disable the L2 cache.
@@ -411,6 +412,14 @@ int arch_cpu_init(void)
 		icache_disable();
 		dcache_disable();
 		clrbits_le32(&pl310->pl310_ctrl, L2X0_CTRL_EN);
+
+		val = readl(&pl310->pl310_prefetch_ctrl);
+
+		val &= ~L310_PREFETCH_CTRL_DBL_LINEFILL;
+		val &= ~L310_PREFETCH_CTRL_DBL_LINEFILL_INCR;
+		val &= ~L310_PREFETCH_CTRL_DBL_LINEFILL_WRAP;
+
+        	writel(val, &pl310->pl310_prefetch_ctrl);
 	}
 
 	/*

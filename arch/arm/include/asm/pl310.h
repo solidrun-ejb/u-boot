@@ -20,6 +20,10 @@
 #define L310_AUX_CTRL_DATA_PREFETCH_MASK	(1 << 28)
 #define L310_AUX_CTRL_INST_PREFETCH_MASK	(1 << 29)
 
+#define L310_PREFETCH_CTRL_DBL_LINEFILL_INCR	(1 << 23)
+#define L310_PREFETCH_CTRL_DBL_LINEFILL_WRAP	(1 << 27)
+#define L310_PREFETCH_CTRL_DBL_LINEFILL		(1 << 30)
+
 struct pl310_regs {
 	u32 pl310_cache_id;
 	u32 pl310_cache_type;
