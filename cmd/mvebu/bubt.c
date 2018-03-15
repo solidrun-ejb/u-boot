@@ -85,6 +85,48 @@ struct mvebu_image_info {
 	u32	encrypt_start_offset;
 	u32	encrypt_size;
 };
+#elif defined(CONFIG_ARMADA_38X)	/* A38X */
+#define KWBHEADER_V1_SIZE(hdr) \
+        (((hdr)->headersz_msb << 16) | le16_to_cpu((hdr)->headersz_lsb))
+
+/* Structure of the main header, version 0 (Kirkwood, Dove) */
+struct mvebu_main_hdr_v0 {
+        uint8_t  blockid;               /* 0x0       */
+        uint8_t  nandeccmode;           /* 0x1       */
+        uint16_t nandpagesize;          /* 0x2-0x3   */
+        uint32_t blocksize;             /* 0x4-0x7   */
+        uint32_t rsvd1;                 /* 0x8-0xB   */
+        uint32_t srcaddr;               /* 0xC-0xF   */
+        uint32_t destaddr;              /* 0x10-0x13 */
+        uint32_t execaddr;              /* 0x14-0x17 */
+        uint8_t  satapiomode;           /* 0x18      */
+        uint8_t  rsvd3;                 /* 0x19      */
+        uint16_t ddrinitdelay;          /* 0x1A-0x1B */
+        uint16_t rsvd2;                 /* 0x1C-0x1D */
+        uint8_t  ext;                   /* 0x1E      */
+        uint8_t  checksum;              /* 0x1F      */
+};
+
+/* Structure of the main header, version 1 (Armada 370/38x/XP) */
+struct mvebu_main_hdr_v1 {
+        uint8_t  blockid;               /* 0x0       */
+        uint8_t  flags;                 /* 0x1       */
+        uint16_t reserved2;             /* 0x2-0x3   */
+        uint32_t blocksize;             /* 0x4-0x7   */
+        uint8_t  version;               /* 0x8       */
+        uint8_t  headersz_msb;          /* 0x9       */
+        uint16_t headersz_lsb;          /* 0xA-0xB   */
+        uint32_t srcaddr;               /* 0xC-0xF   */
+        uint32_t destaddr;              /* 0x10-0x13 */
+        uint32_t execaddr;              /* 0x14-0x17 */
+        uint8_t  options;               /* 0x18      */
+        uint8_t  nandblocksize;         /* 0x19      */
+        uint8_t  nandbadblklocation;    /* 0x1A      */
+        uint8_t  reserved4;             /* 0x1B      */
+        uint16_t reserved5;             /* 0x1C-0x1D */
+        uint8_t  ext;                   /* 0x1E      */
+        uint8_t  checksum;              /* 0x1F      */
+};
 #endif /* CONFIG_ARMADA_XXX */
 
 struct bubt_dev {
@@ -619,7 +661,59 @@ static int check_image_header(void)
 
 	return 0;
 }
+#elif defined(CONFIG_ARMADA_38X)
+static unsigned int image_version(void *header)
+{
+        unsigned char *ptr = header;
+        return ptr[8];
+}
 
+static size_t kwbimage_header_size(unsigned char *ptr)
+{
+        if (image_version((void *)ptr) == 0)
+                return sizeof(struct mvebu_main_hdr_v0);
+        else
+                return KWBHEADER_V1_SIZE((struct mvebu_main_hdr_v1 *)ptr);
+}
+
+static uint8_t image_checksum8(void *start, uint32_t len)
+{
+        uint8_t csum = 0;
+        uint8_t *p = start;
+
+        /* check len and return zero checksum if invalid */
+        if (!len)
+                return 0;
+
+        do {
+                csum += *p;
+                p++;
+        } while (--len);
+
+        return csum;
+}
+
+static int check_image_header(void)
+{
+	struct mvebu_main_hdr_v1 *hdr =
+			(struct mvebu_main_hdr_v1 *)get_load_addr();
+        struct mvebu_main_hdr_v0 *main_hdr = (struct mvebu_main_hdr_v0 *)hdr;
+        uint8_t checksum;
+
+	checksum = image_checksum8(hdr, kwbimage_header_size((unsigned char *)hdr));
+	checksum -= main_hdr->checksum;
+
+	if (checksum != main_hdr->checksum) {
+		printf("Error: Bad Image checksum. 0x%x != 0x%x\n",
+		       checksum, main_hdr->checksum);
+		return ENOEXEC;
+	}
+
+	/* Restore the checksum before writing */
+	printf("Image checksum...OK!\n");
+
+	return 0;
+}
 #else /* Not ARMADA? */
 static int check_image_header(void)
 {
