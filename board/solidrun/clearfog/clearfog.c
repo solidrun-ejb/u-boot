@@ -5,9 +5,11 @@
  */
 
 #include <common.h>
+#include <dm.h>
 #include <i2c.h>
 #include <miiphy.h>
 #include <netdev.h>
+#include <rtc.h>
 #include <asm/io.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/soc.h>
@@ -121,6 +123,17 @@ int board_init(void)
 	setbits_le32(MVEBU_GPIO1_BASE + 0x0, BIT(9));
 	setbits_le32(MVEBU_GPIO0_BASE + 0x0, BIT(19));
 	mdelay(10);
+
+#ifdef CONFIG_DM_RTC
+        struct udevice *dev;
+	int ret;
+
+        ret = uclass_get_device(UCLASS_RTC, 0, &dev);
+        if (ret) {
+                printf("Cannot find RTC: err=%d\n", ret);
+                return CMD_RET_FAILURE;
+        }
+#endif
 
 	return 0;
 }
