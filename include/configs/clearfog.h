@@ -10,6 +10,7 @@
 /*
  * High Level Configuration Options (easy to change)
  */
+#include <linux/sizes.h>
 
 #define CONFIG_DISPLAY_BOARDINFO_LATE
 
@@ -43,18 +44,24 @@
 
 #define CONFIG_ENV_MIN_ENTRIES		128
 
-/* Environment in MMC */
-#define CONFIG_SYS_MMC_ENV_DEV		0
+/* Environment Organization */
 #define CONFIG_ENV_SECT_SIZE		0x200
-#define CONFIG_ENV_SIZE			0x10000
-/*
- * For SD - reserve 1 LBA for MBR + 1M for u-boot image. The MMC/eMMC
- * boot image starts @ LBA-0.
- * As result in MMC/eMMC case it will be a 1 sector gap between u-boot
- * image and environment
- */
-#define CONFIG_ENV_OFFSET		0x104400
+#define CONFIG_ENV_SIZE			(8 * 1024)
+#define CONFIG_ENV_OFFSET		(SZ_1M - CONFIG_ENV_SIZE)
 #define CONFIG_ENV_ADDR			CONFIG_ENV_OFFSET
+
+#ifdef CONFIG_ENV_IS_IN_MMC
+#ifdef CONFIG_MVEBU_SPL_BOOT_DEVICE_MMC
+#define CONFIG_SYS_MMC_ENV_DEV          0
+#define CONFIG_SYS_MMC_ENV_PART         1
+#else
+#define CONFIG_SYS_MMC_ENV_DEV          0
+#endif
+#endif
+
+#ifdef CONFIG_ENV_IS_IN_SPI_FLASH
+#define CONFIG_ENV_SPI_BUS		CONFIG_SF_DEFAULT_BUS
+#endif
 
 #define CONFIG_PHY_MARVELL		/* there is a marvell phy */
 #define PHY_ANEG_TIMEOUT	8000	/* PHY needs a longer aneg time */
@@ -83,18 +90,6 @@
 	"fdt_high=0x10000000\0"		\
 	"initrd_high=0x10000000\0"
 
-/* SPL */
-/*
- * Select the boot device here
- *
- * Currently supported are:
- * SPL_BOOT_SPI_NOR_FLASH	- Booting via SPI NOR flash
- * SPL_BOOT_SDIO_MMC_CARD	- Booting via SDIO/MMC card (partition 1)
- */
-#define SPL_BOOT_SPI_NOR_FLASH		1
-#define SPL_BOOT_SDIO_MMC_CARD		2
-#define CONFIG_SPL_BOOT_DEVICE		SPL_BOOT_SDIO_MMC_CARD
-
 /* Defines for SPL */
 #define CONFIG_SPL_FRAMEWORK
 #define CONFIG_SPL_SIZE			(140 << 10)
@@ -118,7 +113,7 @@
 #define CONFIG_SYS_U_BOOT_OFFS		CONFIG_SYS_SPI_U_BOOT_OFFS
 #endif
 
-#if CONFIG_SPL_BOOT_DEVICE == SPL_BOOT_SDIO_MMC_CARD
+#if defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_MMC) || defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_SDHC)
 /* SPL related MMC defines */
 #define CONFIG_SYS_MMC_U_BOOT_OFFS		(160 << 10)
 #define CONFIG_SYS_U_BOOT_OFFS			CONFIG_SYS_MMC_U_BOOT_OFFS
