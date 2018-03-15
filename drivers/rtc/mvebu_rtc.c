@@ -25,6 +25,8 @@ DECLARE_GLOBAL_DATA_PTR;
 #define RTC_ALARM1          0x10
 #define RTC_CLOCK_CORR      0x18
 #define RTC_TEST_CONF       0x1C
+#define RTC_TEST_CONF_MASK  0xFF
+#define RTC_CCR_NORMAL_PPB  0x2000
 
 /* armada38x SoC registers  */
 #define RTC_38X_BRIDGE_TIMING_CTRL_REG_OFFS             0x0
@@ -73,6 +75,23 @@ static void rtc_update_38x_mbus_timing_params(struct mvebu_rtc_platdata *rtc)
         reg &= ~RTC_38X_READ_OUTPUT_DELAY_MASK;
         reg |= 0x1F << RTC_38X_READ_OUTPUT_DELAY_OFFS; /*Maximum value*/
         writel(reg, rtc->soc_base + RTC_38X_BRIDGE_TIMING_CTRL_REG_OFFS);
+}
+
+static void mvebu_rtc_init(struct mvebu_rtc_platdata *rtc)
+{
+        uint32_t reg;
+
+        /* Test RTC test configuration register bits [7:0] */
+        reg = readl(rtc->base + RTC_TEST_CONF);
+        /* If bits [7:0] are non-zero, assume RTC was uninitialized */
+        if (reg & RTC_TEST_CONF_MASK) {
+                rtc_delayed_write(0, rtc, RTC_TEST_CONF);
+                rtc_delayed_write(0, rtc, RTC_TIME);
+                rtc_delayed_write((RTC_STATUS_ALARM1 | RTC_STATUS_ALARM2),
+                        rtc, RTC_STATUS);
+                rtc_delayed_write(RTC_CCR_NORMAL_PPB, rtc, RTC_CLOCK_CORR);
+        }
+        return;
 }
 
 static int mvebu_rtc_get(struct udevice *dev, struct rtc_time *tm)
@@ -125,6 +144,8 @@ static int mvebu_rtc_probe(struct udevice *dev)
 	rtc->soc_base = devfdt_get_addr_name(dev, "rtc-soc");
 
 	rtc_update_38x_mbus_timing_params(rtc);
+
+	mvebu_rtc_init(rtc);
 	
 	return 0;
 }
