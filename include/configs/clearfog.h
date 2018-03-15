@@ -72,8 +72,16 @@
 #define CONFIG_SUPPORT_EMMC_BOOT
 #endif
 
+#ifdef CONFIG_CMD_NET
+#define CONFIG_TFTP_TSIZE
+#endif
+
 #define CONFIG_PHY_MARVELL		/* there is a marvell phy */
 #define PHY_ANEG_TIMEOUT	8000	/* PHY needs a longer aneg time */
+#define CONFIG_OVERWRITE_ETHADDR_ONCE
+#define NET_SEQ_MACADDR_FROM_ENV
+#define NET_RANDOM_ETHADDR_TO_ENV
+#define FDT_SET_MACADDR_FROM_ENV
 
 /* PCIe support */
 #ifndef CONFIG_SPL_BUILD
