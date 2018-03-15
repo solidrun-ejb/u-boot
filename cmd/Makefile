@@ -152,12 +152,12 @@ obj-$(CONFIG_CMD_REGULATOR) += regulator.o
 obj-$(CONFIG_CMD_BLOB) += blob.o
 
 obj-$(CONFIG_X86) += x86/
+
+obj-$(CONFIG_ARCH_MVEBU) += mvebu/
 endif # !CONFIG_SPL_BUILD
 
 # core command
 obj-y += nvedit.o
-
-obj-$(CONFIG_ARCH_MVEBU) += mvebu/
 
 filechk_data_gz = (echo "static const char data_gz[] ="; cat $< | scripts/bin2c; echo ";")
 
