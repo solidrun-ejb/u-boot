@@ -23,9 +23,11 @@ DECLARE_GLOBAL_DATA_PTR;
 static int spl_sata_load_image(struct spl_image_info *spl_image,
 			       struct spl_boot_device *bootdev)
 {
-	int err;
+	int err = 0;
 	struct blk_desc *stor_dev;
 
+#ifdef CONFIG_SPL_SATA_SUPPORT
+#ifdef CONFIG_SPL_SATA_BOOT_DEVICE
 	err = init_sata(CONFIG_SPL_SATA_BOOT_DEVICE);
 	if (err) {
 #ifdef CONFIG_SPL_LIBCOMMON_SUPPORT
@@ -33,13 +35,23 @@ static int spl_sata_load_image(struct spl_image_info *spl_image,
 #endif
 		return err;
 	} else {
+#else
+		scsi_init();
+#endif
 		/* try to recognize storage devices immediately */
 		scsi_scan(false);
 		stor_dev = blk_get_devnum_by_type(IF_TYPE_SCSI, 0);
 		if (!stor_dev)
 			return -ENODEV;
+#ifdef CONFIG_SPL_SATA_BOOT_DEVICE
 	}
+#endif
+#endif
 
+	if (err)
+		goto out;
+
+#ifdef CONFIG_SYS_SATA_FAT_BOOT_PARTITION
 #ifdef CONFIG_SPL_OS_BOOT
 	if (spl_start_uboot() ||
 	    spl_load_image_fat_os(spl_image, stor_dev,
@@ -50,11 +62,11 @@ static int spl_sata_load_image(struct spl_image_info *spl_image,
 					CONFIG_SYS_SATA_FAT_BOOT_PARTITION,
 				CONFIG_SPL_FS_LOAD_PAYLOAD_NAME);
 	}
-	if (err) {
+	if (err)
 		puts("Error loading sata device\n");
-		return err;
-	}
+#endif
 
-	return 0;
+out:
+	return err;
 }
 SPL_LOAD_IMAGE_METHOD("SATA", 0, BOOT_DEVICE_SATA, spl_sata_load_image);
