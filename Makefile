@@ -838,6 +838,10 @@ quiet_cmd_mkimage = MKIMAGE $@
 cmd_mkimage = $(objtree)/tools/mkimage $(MKIMAGEFLAGS_$(@F)) -d $< $@ \
 	$(if $(KBUILD_VERBOSE:1=), >$(MKIMAGEOUTPUT))
 
+quiet_cmd_mkkwbsplimage = MKIMAGE $@
+cmd_mkkwbsplimage = $(objtree)/tools/mkimage $(MKIMAGEFLAGS_u-boot-spl.kwb) -d $< $@ \
+	$(if $(KBUILD_VERBOSE:1=), >$(MKIMAGEOUTPUT))
+
 quiet_cmd_mkfitimage = MKIMAGE $@
 cmd_mkfitimage = $(objtree)/tools/mkimage $(MKIMAGEFLAGS_$(@F)) -f $(U_BOOT_ITS) -E $@ \
 	$(if $(KBUILD_VERBOSE:1=), >$(MKIMAGEOUTPUT))
@@ -1023,8 +1027,8 @@ u-boot-dtb.img u-boot.img u-boot.kwb u-boot.pbl u-boot-ivt.img: \
 u-boot.itb: u-boot-nodtb.bin dts/dt.dtb $(U_BOOT_ITS) FORCE
 	$(call if_changed,mkfitimage)
 
-u-boot-spl.kwb: u-boot.img spl/u-boot-spl.bin FORCE
-	$(call if_changed,mkimage)
+u-boot-spl%.kwb: u-boot.img spl/u-boot-spl.bin FORCE
+	$(call if_changed,mkkwbsplimage)
 
 u-boot.sha1:	u-boot.bin
 		tools/ubsha1 u-boot.bin
