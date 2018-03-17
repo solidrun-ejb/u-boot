@@ -1,0 +1,43 @@
+if TARGET_CLEARFOG
+
+menu "ClearFog Port Configuration"
+
+choice
+        prompt "ClearFog CON2 Configuration"
+	default CLEARFOG_CON2_PCI
+
+config CLEARFOG_CON2_PCI
+        bool "PCI"
+
+config CLEARFOG_CON2_SATA
+        bool "SATA"
+
+endchoice
+
+choice
+        prompt "ClearFog CON3 Configuration"
+	default CLEARFOG_CON3_PCI
+
+config CLEARFOG_CON3_PCI
+        bool "PCI"
+
+config CLEARFOG_CON3_SATA
+        bool "SATA"
+
+endchoice
+
+choice
+        prompt "ClearFog SFP Speed"
+	default CLEARFOG_SFP_1GB
+
+config CLEARFOG_SFP_1GB
+        bool "1Gbps"
+
+config CLEARFOG_SFP_25GB
+        bool "2.5Gbps"
+
+endchoice
+
+endmenu
+
+endif
