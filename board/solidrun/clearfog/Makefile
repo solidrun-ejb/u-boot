@@ -5,10 +5,12 @@
 #
 
 obj-$(CONFIG_TARGET_CLEARFOG)	:= clearfog.o
+obj-$(CONFIG_TARGET_CLEARFOG_BASE)	:= clearfog.o
 
 ifeq ($(CONFIG_SPL_BUILD),)
 
 extra-$(CONFIG_TARGET_CLEARFOG) += kwbimage.cfg
+extra-$(CONFIG_TARGET_CLEARFOG_BASE) += kwbimage.cfg
 
 KWB_REPLACE += BOOT_FROM
 ifneq ($(CONFIG_MVEBU_SPL_BOOT_DEVICE_MMC),)

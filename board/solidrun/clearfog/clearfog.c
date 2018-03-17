@@ -35,6 +35,7 @@ DECLARE_GLOBAL_DATA_PTR;
 #define BOARD_GPP_POL_LOW	0x0
 #define BOARD_GPP_POL_MID	0x0
 
+#ifdef CONFIG_TARGET_CLEARFOG
 static struct serdes_map board_serdes_map[] = {
 	{SATA0, SERDES_SPEED_3_GBPS, SERDES_DEFAULT_MODE, 0, 0},
 	{SGMII1, SERDES_SPEED_1_25_GBPS, SERDES_DEFAULT_MODE, 0, 0},
@@ -55,6 +56,26 @@ static struct serdes_map board_serdes_map[] = {
 	{SGMII2, SERDES_SPEED_1_25_GBPS, SERDES_DEFAULT_MODE, 0, 0},
 #endif
 };
+#endif
+
+#ifdef CONFIG_TARGET_CLEARFOG_BASE
+static struct serdes_map board_serdes_map[] = {
+	{SATA0, SERDES_SPEED_3_GBPS, SERDES_DEFAULT_MODE, 0, 0},
+	{SGMII1, SERDES_SPEED_1_25_GBPS, SERDES_DEFAULT_MODE, 0, 0},
+#ifdef CONFIG_CLEARFOG_CON3_SATA
+	{SATA1, SERDES_SPEED_3_GBPS, SERDES_DEFAULT_MODE, 0, 0},
+#else
+	{PEX1, SERDES_SPEED_5_GBPS, PEX_ROOT_COMPLEX_X1, 0, 0},
+#endif
+	{USB3_HOST1, SERDES_SPEED_5_GBPS, SERDES_DEFAULT_MODE, 0, 0},
+	{USB3_HOST0, SERDES_SPEED_5_GBPS, SERDES_DEFAULT_MODE, 0, 0},
+#ifdef CONFIG_CLEARFOG_SFP_25GB
+	{SGMII2, SERDES_SPEED_3_125_GBPS, SERDES_DEFAULT_MODE, 0, 0},
+#else
+	{SGMII2, SERDES_SPEED_1_25_GBPS, SERDES_DEFAULT_MODE, 0, 0},
+#endif
+};
+#endif
 
 int hws_board_topology_load(struct serdes_map **serdes_map_array, u8 *count)
 {

@@ -210,10 +210,16 @@
 
 #include <config_distro_bootcmd.h>
 
+#ifdef CONFIG_TARGET_CLEARFOG_BASE
+#define DEFAULT_DEVICE_TREE "armada-388-clearfog-base.dtb"
+#else
+#define DEFAULT_DEVICE_TREE "armada-388-clearfog.dtb"
+#endif
+
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	RELOCATION_LIMITS_ENV_SETTINGS \
 	LOAD_ADDRESS_ENV_SETTINGS \
-	"fdtfile=" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
+	"fdtfile=" DEFAULT_DEVICE_TREE "\0" \
 	"console=ttyS0,115200\0" \
 	BOOTENV
 

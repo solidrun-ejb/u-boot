@@ -1,10 +1,11 @@
-if TARGET_CLEARFOG
+if TARGET_CLEARFOG || TARGET_CLEARFOG_BASE
 
 menu "ClearFog Port Configuration"
 
 choice
         prompt "ClearFog CON2 Configuration"
 	default CLEARFOG_CON2_PCI
+	depends on TARGET_CLEARFOG
 
 config CLEARFOG_CON2_PCI
         bool "PCI"

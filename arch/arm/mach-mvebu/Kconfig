@@ -81,6 +81,16 @@ config TARGET_CLEARFOG
 	select BOARD_SUPPORTS_SPI_BOOT
 	select BOARD_SUPPORTS_UART_BOOT
 
+config TARGET_CLEARFOG_BASE
+	bool "Support ClearFog Base"
+	select 88F6820
+	select BOARD_SUPPORTS_MULTIBOOT
+	select BOARD_SUPPORTS_MMC_BOOT
+	select BOARD_SUPPORTS_SATA_BOOT
+	select BOARD_SUPPORTS_SDHC_BOOT
+	select BOARD_SUPPORTS_SPI_BOOT
+	select BOARD_SUPPORTS_UART_BOOT
+
 config TARGET_NAEBA
 	bool "Support Naeba machine"
 	select 88F6820
@@ -145,7 +155,7 @@ config TARGET_CONTROLCENTERDC
 endchoice
 
 config SYS_BOARD
-	default "clearfog" if TARGET_CLEARFOG
+	default "clearfog" if TARGET_CLEARFOG || TARGET_CLEARFOG_BASE
 	default "mvebu_armada-37xx" if TARGET_MVEBU_ARMADA_37XX
 	default "db-88f6720" if TARGET_DB_88F6720
 	default "db-88f6820-gp" if TARGET_DB_88F6820_GP
@@ -159,7 +169,7 @@ config SYS_BOARD
 	default "naeba" if TARGET_NAEBA
 
 config SYS_CONFIG_NAME
-	default "clearfog" if TARGET_CLEARFOG
+	default "clearfog" if TARGET_CLEARFOG || TARGET_CLEARFOG_BASE
 	default "mvebu_armada-37xx" if TARGET_MVEBU_ARMADA_37XX
 	default "db-88f6720" if TARGET_DB_88F6720
 	default "db-88f6820-gp" if TARGET_DB_88F6820_GP
@@ -179,7 +189,7 @@ config SYS_VENDOR
 	default "Marvell" if TARGET_DB_88F6820_GP
 	default "Marvell" if TARGET_DB_88F6820_AMC
 	default "Marvell" if TARGET_MVEBU_ARMADA_8K
-	default "solidrun" if TARGET_CLEARFOG
+	default "solidrun" if TARGET_CLEARFOG || TARGET_CLEARFOG_BASE
 	default "Synology" if TARGET_DS414
 	default "CZ.NIC" if TARGET_TURRIS_OMNIA
 	default "solidrun" if TARGET_NAEBA
