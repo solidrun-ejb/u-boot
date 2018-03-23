@@ -8,6 +8,7 @@
 #include <dm.h>
 #include <i2c.h>
 #include <miiphy.h>
+#include <mmc.h>
 #include <netdev.h>
 #include <rtc.h>
 #include <asm/io.h>
@@ -183,3 +184,29 @@ int board_eth_init(bd_t *bis)
 	cpu_eth_init(bis); /* Built in controller(s) come first */
 	return pci_eth_init(bis);
 }
+
+static bool has_emmc(void)
+{
+	struct mmc *mmc;
+	mmc = find_mmc_device(0);
+	if (!mmc)
+		return 0;
+	return (!mmc_init(mmc) && IS_MMC(mmc)) ? true : false;
+}
+
+#ifdef CONFIG_OF_LIBFDT
+int ft_board_setup(void *blob, bd_t *bd)
+{
+	__maybe_unused int offset;
+
+	if (has_emmc()) {
+		offset = fdt_path_offset(blob, "/soc/internal-regs/sdhci@d8000");
+		if (offset >= 0) {
+			fdt_delprop(blob, offset, "cd-gpios");
+			fdt_setprop_empty(blob, offset, "non-removable");
+		}
+	}
+		
+	return 0;
+}
+#endif
