@@ -857,13 +857,13 @@ struct bubt_dev *find_bubt_dev(char *dev_name)
 #define DEFAULT_BUBT_SRC "tftp"
 
 #ifndef DEFAULT_BUBT_DST
-#ifdef CONFIG_MVEBU_SPI_BOOT
+#if defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_SPI)
 #define DEFAULT_BUBT_DST "spi"
-#elif defined(CONFIG_MVEBU_NAND_BOOT)
+#elif defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_NAND)
 #define DEFAULT_BUBT_DST "nand"
-#elif defined(CONFIG_MVEBU_MMC_BOOT)
+#elif defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_MMC)
 #define DEFAULT_BUBT_DST "mmc"
-else
+#else
 #define DEFAULT_BUBT_DST "error"
 #endif
 #endif /* DEFAULT_BUBT_DST */
