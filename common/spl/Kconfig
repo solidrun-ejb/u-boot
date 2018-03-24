@@ -180,6 +180,21 @@ config SYS_MMCSD_RAW_MODE_U_BOOT_PARTITION_TYPE
 	  Partition Type on the MMC to load U-Boot from, when the MMC is being
 	  used in raw mode.
 
+config SYS_SATA_RAW_MODE_U_BOOT_USE_SECTOR
+	bool "SATA raw mode: by sector"
+	default y if ARCH_MVEBU
+	help
+	  Use sector number for specifying U-Boot location on SATA drive in
+	  raw mode.
+
+config SYS_SATA_RAW_MODE_U_BOOT_SECTOR
+	hex "Address on the SATA drive to load U-Boot from"
+	depends on SYS_SATA_RAW_MODE_U_BOOT_USE_SECTOR
+	default 0xD9 if ARCH_MVEBU
+	help
+	  Address on the SATA drive to load U-Boot from, when the drive is being used
+	  in raw mode. Units: SATA sectors (1 sector = 512 bytes).
+
 config SPL_CRC32_SUPPORT
 	bool "Support CRC32"
 	depends on SPL_FIT
