@@ -42,6 +42,8 @@ static enum env_location env_get_default_location(void)
 		return ENVL_NVRAM;
 	else if IS_ENABLED(CONFIG_ENV_IS_IN_REMOTE)
 		return ENVL_REMOTE;
+	else if IS_ENABLED(CONFIG_ENV_IS_IN_SATA)
+		return ENVL_SATA;
 	else if IS_ENABLED(CONFIG_ENV_IS_IN_SPI_FLASH)
 		return ENVL_SPI_FLASH;
 	else if IS_ENABLED(CONFIG_ENV_IS_IN_UBI)
