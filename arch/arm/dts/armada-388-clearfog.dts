@@ -52,7 +52,7 @@
 #include "armada-388.dtsi"
 
 / {
-	model = "SolidRun Clearfog A1";
+	model = "SolidRun Clearfog";
 	compatible = "solidrun,clearfog-a1", "marvell,armada388",
 		"marvell,armada385", "marvell,armada380";
 

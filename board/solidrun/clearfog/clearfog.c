@@ -174,8 +174,11 @@ int board_init(void)
 
 int checkboard(void)
 {
-	puts("Board: SolidRun ClearFog\n");
-
+#ifdef CONFIG_TARGET_CLEARFOG_BASE
+	puts("Board: SolidRun ClearFog Base\n");
+#else
+	puts("Board: SolidRun ClearFog Pro\n");
+#endif
 	return 0;
 }
 
