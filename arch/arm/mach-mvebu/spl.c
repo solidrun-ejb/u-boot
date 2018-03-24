@@ -32,7 +32,9 @@ static u32 get_boot_device(void)
 	 * in the first 8 bits it's an error condition. And in that case
 	 * try to boot from UART.
 	 */
+#ifndef CONFIG_MVEBU_SPL_BOOT_DEVICE_UART
 	if (boot_device)
+#endif
 #else
 	if (boot_device == BOOTROM_ERR_MODE_UART)
 #endif
