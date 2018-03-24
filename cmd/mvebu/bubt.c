@@ -16,6 +16,7 @@
 #include <spi_flash.h>
 #include <spi.h>
 #include <nand.h>
+#include <scsi.h>
 #include <usb.h>
 #include <fs.h>
 #include <mmc.h>
@@ -304,6 +305,63 @@ static int is_mmc_active(void)
 }
 
 /********************************************************************
+ *     SATA services
+ ********************************************************************/
+#if defined(CONFIG_SCSI)
+static int sata_burn_image(size_t image_size)
+{
+	lbaint_t	start_lba;
+	lbaint_t	blk_count;
+	ulong		blk_written;
+	struct blk_desc *blk_desc;
+	__maybe_unused int part;
+	__maybe_unused char original_part;
+
+	scsi_init();
+
+	/* try to recognize storage devices immediately */
+	scsi_scan(false);
+
+	blk_desc = blk_get_devnum_by_type(IF_TYPE_SCSI, CONFIG_SYS_SATA_ENV_DEV);
+	if (!blk_desc)
+		return -ENODEV;
+
+
+	/* SATA reserves LBA-0 for MBR and boots from LBA-1 */
+	start_lba = 1;
+	blk_count = image_size / blk_desc->blksz;
+	if (image_size % blk_desc->blksz)
+		blk_count += 1;
+
+	blk_written = blk_dwrite(blk_desc, start_lba, blk_count,
+				 (void *)get_load_addr());
+
+	if (blk_written != blk_count) {
+		printf("Error - written %#lx blocks\n", blk_written);
+		return ENOSPC;
+	}
+	printf("Done!\n");
+
+	return 0;
+}
+
+static int is_sata_active(void)
+{
+	return 1;
+}
+#else /* CONFIG_SCSI */
+static int sata_burn_image(size_t image_size)
+{
+	return ENODEV;
+}
+
+static int is_sata_active(void)
+{
+	return 0;
+}
+#endif /* CONFIG_SCSI */
+
+/********************************************************************
  *     SPI services
  ********************************************************************/
 #ifdef CONFIG_SPI_FLASH
@@ -535,6 +593,7 @@ enum bubt_devices {
 	BUBT_DEV_NET = 0,
 	BUBT_DEV_USB,
 	BUBT_DEV_MMC,
+	BUBT_DEV_SATA,
 	BUBT_DEV_SPI,
 	BUBT_DEV_NAND,
 
@@ -545,6 +604,7 @@ struct bubt_dev bubt_devs[BUBT_MAX_DEV] = {
 	{"tftp", tftp_read_file, NULL, is_tftp_active},
 	{"usb",  usb_read_file,  NULL, is_usb_active},
 	{"mmc",  mmc_read_file,  mmc_burn_image, is_mmc_active},
+	{"sata",  NULL, sata_burn_image,  is_sata_active},
 	{"spi",  NULL, spi_burn_image,  is_spi_active},
 	{"nand", NULL, nand_burn_image, is_nand_active},
 };
@@ -863,6 +923,8 @@ struct bubt_dev *find_bubt_dev(char *dev_name)
 #define DEFAULT_BUBT_DST "nand"
 #elif defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_MMC)
 #define DEFAULT_BUBT_DST "mmc"
+#elif defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_SATA)
+#define DEFAULT_BUBT_DST "sata"
 #else
 #define DEFAULT_BUBT_DST "error"
 #endif
@@ -940,7 +1002,7 @@ U_BOOT_CMD(
 	"Burn a u-boot image to flash",
 	"[file-name] [destination [source]]\n"
 	"\t-file-name     The image file name to burn. Default = flash-image.bin\n"
-	"\t-destination   Flash to burn to [spi, nand, mmc]. Default = active boot device\n"
+	"\t-destination   Flash to burn to [spi, nand, mmc, sata]. Default = active boot device\n"
 	"\t-source        The source to load image from [tftp, usb, mmc]. Default = tftp\n"
 	"Examples:\n"
 	"\tbubt - Burn flash-image.bin from tftp to active boot device\n"
