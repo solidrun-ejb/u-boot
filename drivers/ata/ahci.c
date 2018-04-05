@@ -303,7 +303,7 @@ static int ahci_host_init(struct ahci_uc_priv *uc_priv)
 			continue;
 		}
 
-		printf("Target spinup took %d ms.\n", j);
+		debug("Target spinup took %d ms.\n", j);
 		if (j == WAIT_MS_SPINUP)
 			debug("timeout.\n");
 		else
@@ -405,7 +405,7 @@ static void ahci_print_info(struct ahci_uc_priv *uc_priv)
 	       vers & 0xff,
 	       ((cap >> 8) & 0x1f) + 1, (cap & 0x1f) + 1, speed_s, impl, scc_s);
 
-	printf("flags: "
+	debug("flags: "
 	       "%s%s%s%s%s%s%s"
 	       "%s%s%s%s%s%s%s"
 	       "%s%s%s%s%s%s\n",
