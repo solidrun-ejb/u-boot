@@ -556,7 +556,7 @@ static void ahci_mvebu_regret_option(void __iomem *base)
 
 void scsi_init(void)
 {
-	printf("MVEBU SATA INIT\n");
+	debug("MVEBU SATA INIT\n");
 	ahci_mvebu_mbus_config((void __iomem *)MVEBU_SATA0_BASE);
 	ahci_mvebu_regret_option((void __iomem *)MVEBU_SATA0_BASE);
 	ahci_init((void __iomem *)MVEBU_SATA0_BASE);
@@ -595,7 +595,7 @@ int board_xhci_enable(fdt_addr_t base)
 {
 	const struct mbus_dram_target_info *dram;
 
-	printf("MVEBU XHCI INIT controller @ 0x%lx\n", base);
+	debug("MVEBU XHCI INIT controller @ 0x%lx\n", base);
 
 	dram = mvebu_mbus_dram_info();
 	xhci_mvebu_mbus_config((void __iomem *)base, dram);
