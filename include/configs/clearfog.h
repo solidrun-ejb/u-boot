@@ -234,6 +234,7 @@
 	LOAD_ADDRESS_ENV_SETTINGS \
 	"fdtfile=" DEFAULT_DEVICE_TREE "\0" \
 	"console=ttyS0,115200\0" \
+	"autoload=no\0" \
 	BOOTENV
 
 #endif /* CONFIG_SPL_BUILD */
