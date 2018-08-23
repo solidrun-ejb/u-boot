@@ -659,6 +659,7 @@ struct ccsr_serdes {
 	u8	res_19a0[0x2000-0x19a0];	/* from 0x19a0 to 0x1fff */
 };
 
+#ifndef CONFIG_MPC8XXX_GPIO
 struct ccsr_gpio {
 	u32	gpdir;
 	u32	gpodr;
@@ -668,6 +669,7 @@ struct ccsr_gpio {
 	u32	gpicr;
 	u32	gpibe;
 };
+#endif
 
 /* MMU 500 */
 #define SMMU_SCR0			(SMMU_BASE + 0x0)

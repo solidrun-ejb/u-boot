@@ -13,4 +13,10 @@
 #ifndef __ASM_ARCH_LS102XA_GPIO_H_
 #define __ASM_ARCH_LS102XA_GPIO_H_
 
+struct mpc8xxx_gpio_plat {
+	ulong addr;
+	unsigned long size;
+	uint ngpios;
+};
+
 #endif
