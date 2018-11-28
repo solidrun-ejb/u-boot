@@ -1,0 +1,6 @@
+i.MX8MQ HB BOARD
+M:	Jon Nettleton <jon.nettleton@solid-run.com>
+S:	Maintained
+F:	board/solidrun/imx8mq_hb/
+F:	include/configs/imx8mq_hb.h
+F:	configs/imx8mq_hb_defconfig

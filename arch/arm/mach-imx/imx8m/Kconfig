@@ -16,8 +16,14 @@ config TARGET_IMX8MQ_EVK
 	select IMX8M
 	select IMX8M_LPDDR4
 
+config TARGET_IMX8MQ_HB
+	bool "imx8mq_hb"
+	select IMX8M
+	select IMX8M_LPDDR4
+
 endchoice
 
 source "board/freescale/imx8mq_evk/Kconfig"
+source "board/solidrun/imx8mq_hb/Kconfig"
 
 endif
