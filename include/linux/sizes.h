@@ -8,8 +8,6 @@
 #ifndef __LINUX_SIZES_H__
 #define __LINUX_SIZES_H__
 
-#include <common.h>
-
 #define SZ_1				0x00000001
 #define SZ_2				0x00000002
 #define SZ_4				0x00000004
