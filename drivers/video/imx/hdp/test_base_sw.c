@@ -52,7 +52,7 @@
 #include <common.h>
 #include <asm/io.h>
 
-#ifdef CONFIG_ARCH_MX8M
+#ifdef CONFIG_ARCH_IMX8M
 /* mscale */
 #define HDMI_BASE     0x32c00000
 #define HDMI_PHY_BASE 0x32c80000
@@ -68,7 +68,7 @@
 
 #endif
 
-#ifdef CONFIG_ARCH_MX8M
+#ifdef CONFIG_ARCH_IMX8M
 int cdn_apb_read(unsigned int addr, unsigned int *value)
 {
 	unsigned int temp;

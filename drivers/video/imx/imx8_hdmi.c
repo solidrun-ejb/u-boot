@@ -30,7 +30,7 @@
 #include "API_AFE_ss28fdsoi_kiran_hdmitx.h"
 #endif
 
-#ifdef CONFIG_MX8M
+#ifdef CONFIG_IMX8M
 #include "API_AFE_t28hpc_hdmitx.h"
 #endif
 
