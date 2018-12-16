@@ -185,6 +185,12 @@ int power_init_board(void)
 
 void spl_board_init(void)
 {
+	/* Serial download mode */
+	if (is_usb_boot()) {
+		puts("Back to ROM, SDP\n");
+		restore_boot_params();
+	}
+
 	puts("Normal Boot\n");
 }
 
