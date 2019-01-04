@@ -18,6 +18,7 @@
 #include <fdt_support.h>
 #include <fsl_wdog.h>
 #include <imx_sip.h>
+#include <dm/fdtaddr.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -222,7 +223,20 @@ int ft_system_setup(void *blob, bd_t *bd)
 }
 #endif
 
-#ifdef CONFIG_USB_XHCI_IMX8M
+#ifdef CONFIG_USB
+int imx8m_get_usb_index (struct udevice *dev)
+{
+	fdt_addr_t base;
+
+	base = devfdt_get_addr(dev);
+        if (base == FDT_ADDR_T_NONE) {
+                printf("Can't get the USB register base address\n");
+                return -ENXIO;
+        }
+
+	return base == USB1_BASE_ADDR ? 0 : 1;
+}
+
 #define FSL_SIP_GPC                    0xC2000000
 #define FSL_SIP_CONFIG_GPC_PM_DOMAIN   0x03
 int imx8m_usb_power(int usb_id, bool on)
