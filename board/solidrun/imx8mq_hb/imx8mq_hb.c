@@ -287,8 +287,11 @@ int board_late_init(void)
 	env_set("board_rev", "iMX8MQ");
 #endif
 
-	init_usb_clk(0);
-	init_usb_clk(1);
-
 	return 0;
+}
+
+void board_preboot_os(void)
+{
+        init_usb_clk(0);
+        init_usb_clk(1);
 }
