@@ -14,4 +14,4 @@ obj-$(CONFIG_USB_TCPC) += ../../freescale/common/tcpc.o
 endif
 
 obj-$(CONFIG_POWER_PFUZE100)    += ../../freescale/common/pfuze.o
-obj-$(CONFIG_$(SPL_)DM_PMIC_PFUZE100) += ../../freescale/common/pfuze_dm.o
+obj-$(CONFIG_$(SPL_)DM_PMIC_PFUZE100) += ../../freescale/common/pfuze.o
