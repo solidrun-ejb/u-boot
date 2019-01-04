@@ -81,16 +81,10 @@
 #define CONFIG_ETHPRIME			"FEC"
 
 #define CONFIG_FEC_MXC
-#define CONFIG_FEC_XCV_TYPE		RGMII
-#define CONFIG_FEC_MXC_PHYADDR		4
 #define FEC_QUIRK_ENET_MAC
-#define GP_RGMII_PHY_RESET		IMX_GPIO_NR(1, 9)
 
 #define CONFIG_PHY_GIGE
 #define IMX_FEC_BASE			0x30BE0000
-
-#define CONFIG_PHYLIB
-#define CONFIG_PHY_ATHEROS
 #endif
 
 /* Link Definitions */
