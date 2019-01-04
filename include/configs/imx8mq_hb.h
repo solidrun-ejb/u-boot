@@ -146,24 +146,6 @@
 /* I2C Configs */
 #define CONFIG_SYS_I2C_SPEED		  100000
 
-/* USB configs */
-#ifndef CONFIG_SPL_BUILD
-#define CONFIG_HAS_FSL_XHCI_USB
-
-#ifdef CONFIG_HAS_FSL_XHCI_USB
-#define CONFIG_USB_MAX_CONTROLLER_COUNT         2
-#endif
-
-#define CONFIG_USB_DWC3
-#define CONFIG_USB_DWC3_GADGET
-#define CONFIG_USBD_HS
-
-#define CONFIG_USB_GADGET_MASS_STORAGE
-#define CONFIG_USB_GADGET_VBUS_DRAW 2
-#define CONFIG_USB_GADGET_DUALSPEED
-
-#endif
-
 #define CONFIG_OF_SYSTEM_SETUP
 
 /* Framebuffer */
