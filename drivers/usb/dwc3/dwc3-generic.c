@@ -119,6 +119,15 @@ struct dwc3_glue_ops {
 			       enum usb_dr_mode mode);
 };
 
+__weak int board_usb_of_init(struct udevice *dev)
+{
+        return 0;
+}
+
+__weak void board_usb_of_cleanup(struct udevice *dev)
+{
+}
+
 static int dwc3_glue_bind(struct udevice *parent)
 {
 	const void *fdt = gd->fdt_blob;
@@ -242,12 +251,16 @@ static int dwc3_glue_probe(struct udevice *dev)
 		index++;
 	}
 
+	ret = board_usb_of_init(dev);
+
 	return 0;
 }
 
 static int dwc3_glue_remove(struct udevice *dev)
 {
 	struct dwc3_glue_data *glue = dev_get_platdata(dev);
+
+	board_usb_of_cleanup(dev);
 
 	reset_release_bulk(&glue->resets);
 
