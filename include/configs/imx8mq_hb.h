@@ -102,7 +102,7 @@
 
 #define CONFIG_ENV_OVERWRITE
 #define CONFIG_ENV_SIZE			0x2000
-#define CONFIG_ENV_OFFSET               (SZ_1M - CONFIG_ENV_SIZE)
+#define CONFIG_ENV_OFFSET               (SZ_2M - CONFIG_ENV_SIZE)
 #define CONFIG_SYS_MMC_ENV_DEV		1	/* USDHC1 */
 
 /* Size of malloc() pool */
