@@ -8,9 +8,11 @@ file=$1
 
 post_process=$2
 
+[ -z "$BINDIR" ] && bindir=$srctree || bindir=$BINDIR;
+
 blobs=`awk '/^SIGNED_HDMI/ {print $2} /^LOADER/ {print $2} /^SECOND_LOADER/ {print $2} /^DDR_FW/ {print $2}' $file`
 for f in $blobs; do
-	tmp=$srctree/$f
+	tmp=$bindir/$f
 
 	if [ $f == "spl/u-boot-spl-ddr.bin" ] || [ $f == "u-boot.itb" ]; then
 		continue
@@ -29,12 +31,12 @@ for f in $blobs; do
 done
 
 if [ $post_process == 1 ]; then
-	if [ -f $srctree/lpddr4_pmu_train_1d_imem.bin ]; then
-		objcopy -I binary -O binary --pad-to 0x8000 --gap-fill=0x0 $srctree/lpddr4_pmu_train_1d_imem.bin lpddr4_pmu_train_1d_imem_pad.bin
-		objcopy -I binary -O binary --pad-to 0x4000 --gap-fill=0x0 $srctree/lpddr4_pmu_train_1d_dmem.bin lpddr4_pmu_train_1d_dmem_pad.bin
-		objcopy -I binary -O binary --pad-to 0x8000 --gap-fill=0x0 $srctree/lpddr4_pmu_train_2d_imem.bin lpddr4_pmu_train_2d_imem_pad.bin
+	if [ -f $bindir/lpddr4_pmu_train_1d_imem.bin ]; then
+		objcopy -I binary -O binary --pad-to 0x8000 --gap-fill=0x0 $bindir/lpddr4_pmu_train_1d_imem.bin lpddr4_pmu_train_1d_imem_pad.bin
+		objcopy -I binary -O binary --pad-to 0x4000 --gap-fill=0x0 $bindir/lpddr4_pmu_train_1d_dmem.bin lpddr4_pmu_train_1d_dmem_pad.bin
+		objcopy -I binary -O binary --pad-to 0x8000 --gap-fill=0x0 $bindir/lpddr4_pmu_train_2d_imem.bin lpddr4_pmu_train_2d_imem_pad.bin
 		cat lpddr4_pmu_train_1d_imem_pad.bin lpddr4_pmu_train_1d_dmem_pad.bin > lpddr4_pmu_train_1d_fw.bin
-		cat lpddr4_pmu_train_2d_imem_pad.bin $srctree/lpddr4_pmu_train_2d_dmem.bin > lpddr4_pmu_train_2d_fw.bin
+		cat lpddr4_pmu_train_2d_imem_pad.bin $bindir/lpddr4_pmu_train_2d_dmem.bin > lpddr4_pmu_train_2d_fw.bin
 		cat spl/u-boot-spl.bin lpddr4_pmu_train_1d_fw.bin lpddr4_pmu_train_2d_fw.bin > spl/u-boot-spl-ddr.bin
 		rm -f lpddr4_pmu_train_1d_fw.bin lpddr4_pmu_train_2d_fw.bin lpddr4_pmu_train_1d_imem_pad.bin lpddr4_pmu_train_1d_dmem_pad.bin lpddr4_pmu_train_2d_imem_pad.bin
 	fi
