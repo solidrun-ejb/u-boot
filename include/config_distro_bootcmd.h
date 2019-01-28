@@ -361,7 +361,22 @@
 	"boot_script_dhcp=boot.scr.uimg" BOOTENV_EXTRA_BOOT_SCRIPTS "\0" \
 	BOOTENV_BOOT_TARGETS \
 	\
+	"find_uuid="                                                      \
+                "part list ${devtype} ${devnum} devparts; "               \
+                "for devpart in ${devparts}; do "                         \
+                        "if test -z \"${uuid}\"; then "                   \
+                                "if test -e ${devtype} "                  \
+                                                "${devnum}:${devpart} "   \
+                                                "/sbin/init; then "       \
+                                        "part uuid ${devtype} "           \
+                                                "${devnum}:${devpart} "   \
+                                                "uuid; "                  \
+                                "fi; "                                    \
+		        "fi; "                                            \
+                "done\0 "                                                 \
+	\
 	"boot_extlinux="                                                  \
+		"run find_uuid; "                                         \
 		"sysboot ${devtype} ${devnum}:${distro_bootpart} any "    \
 			"${scriptaddr} ${prefix}extlinux/extlinux.conf\0" \
 	\
