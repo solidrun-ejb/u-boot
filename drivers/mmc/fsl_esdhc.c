@@ -1497,7 +1497,7 @@ static int fsl_esdhc_probe(struct udevice *dev)
 #endif
 	}
 
-	priv->wp_enable = 1;
+	priv->wp_enable = 0;
 
 #ifdef CONFIG_DM_GPIO
 	ret = gpio_request_by_name(dev, "wp-gpios", 0, &priv->wp_gpio,
