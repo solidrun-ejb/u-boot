@@ -217,7 +217,6 @@ config ARCH_LX2160A
 	select SYS_FSL_DDR_LE
 	select SYS_FSL_DDR_VER_50
 	select SYS_FSL_EC1
-	select SYS_FSL_EC2
 	select SYS_FSL_ERRATUM_A050106
 	select SYS_FSL_HAS_RGMII
 	select SYS_FSL_HAS_SEC
