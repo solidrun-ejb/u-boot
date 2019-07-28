@@ -1,0 +1,63 @@
+// SPDX-License-Identifier: GPL-2.0+ OR X11
+/*
+ * SolidRun LX2160ACEX7 device tree source
+ *
+ * Author:	Rabeeh Khoury <rabeeh@solid-run.com>
+ *
+ * Copyright 2019 SolidRun ltd.
+ *
+ */
+
+/dts-v1/;
+
+#include "fsl-lx2160a.dtsi"
+
+/ {
+	model = "SolidRun LX2160ACEX7 COM express type 7 based board";
+	compatible = "fsl,lx2160acex7", "fsl,lx2160a";
+
+	aliases {
+		spi0 = &fspi;
+	};
+};
+
+&fspi {
+	bus-num = <0>;
+	status = "okay";
+
+	qflash0: MT35XU512ABA1G12@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "spi-flash";
+		spi-max-frequency = <50000000>;
+		reg = <0>;
+		/* The following setting enables 1-1-8 (CMD-ADDR-DATA) mode */
+		fspi-rx-bus-width = <8>; /* 8 FSPI Rx lines */
+		fspi-tx-bus-width = <1>; /* 1 FSPI Tx line */
+	};
+
+};
+
+&esdhc0 {
+	status = "okay";
+};
+
+&esdhc1 {
+	status = "okay";
+};
+
+&sata0 {
+	status = "okay";
+};
+
+&sata1 {
+	status = "okay";
+};
+
+&sata2 {
+	status = "okay";
+};
+
+&sata3 {
+	status = "okay";
+};
