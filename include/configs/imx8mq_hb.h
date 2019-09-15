@@ -24,17 +24,15 @@
 #ifdef CONFIG_SPL_BUILD
 /*#define CONFIG_ENABLE_DDR_TRAINING_DEBUG*/
 #define CONFIG_SPL_LDSCRIPT		"arch/arm/cpu/armv8/u-boot-spl.lds"
-#define CONFIG_SPL_STACK		0x187FF0
+#define CONFIG_SPL_STACK		0x00187FF0
 #define CONFIG_SPL_BSS_START_ADDR	0x00180000
-#define CONFIG_SPL_BSS_MAX_SIZE		0x2000	/* 8 KB */
+#define CONFIG_SPL_BSS_MAX_SIZE		0x00002000	/* 8 KB */
 #define CONFIG_SYS_SPL_MALLOC_START	0x42200000
-#define CONFIG_SYS_SPL_MALLOC_SIZE	0x8000	/* 8 KB */
-#define CONFIG_SYS_SPL_PTE_RAM_BASE	0x41580000
+#define CONFIG_SYS_SPL_MALLOC_SIZE	0x00080000	/* 512 KB */
+#define CONFIG_MALLOC_F_ADDR		0x00182000	/* malloc f used before GD_FLG_FULL_MALLOC_INIT set */
 #define CONFIG_SYS_ICACHE_OFF
 #define CONFIG_SYS_DCACHE_OFF
 
-/* malloc f used before GD_FLG_FULL_MALLOC_INIT set */
-#define CONFIG_MALLOC_F_ADDR		0x182000
 #define CONFIG_SPL_ABORT_ON_RAW_IMAGE /* For RAW image gives a error info not panic */
 
 #undef CONFIG_DM_MMC
@@ -110,7 +108,7 @@
 
 #define CONFIG_SYS_SDRAM_BASE           0x40000000
 #define PHYS_SDRAM                      0x40000000
-#define PHYS_SDRAM_SIZE                 0xC0000000 /* 3GB DDR */
+#define PHYS_SDRAM_SIZE                 0x40000000 /* 1GB DDR */
 
 #define CONFIG_BAUDRATE			115200
 
