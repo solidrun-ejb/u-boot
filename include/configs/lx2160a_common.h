@@ -279,11 +279,11 @@ int select_i2c_ch_pca9547_sec(unsigned char ch);
 
 #define SD_BOOTCOMMAND						\
 		"env exists mcinitcmd && mmcinfo; "		\
-		"mmc read 0x80d00000 0x6800 0x800; "		\
+		"mmc read 0x80001000 0x6800 0x800; "		\
 		"env exists mcinitcmd && env exists secureboot "	\
 		" && mmc read 0x80780000 0x3C00 0x20 "		\
 		"&& esbc_validate 0x80780000;env exists mcinitcmd "	\
-		"&& fsl_mc lazyapply dpl 0x80d00000;"		\
+		"&& fsl_mc lazyapply dpl 0x80001000;"		\
 		"run distro_bootcmd;run sd_bootcmd;"		\
 		"env exists secureboot && esbc_halt;"
 
