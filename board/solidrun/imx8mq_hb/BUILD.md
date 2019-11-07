@@ -15,7 +15,7 @@ export CROSS_COMPILE=/opt/imx8m/toolchain/gcc-linaro-7.3.1-2018.05-i686_aarch64-
 
 ### Download Source and Firmware
 ```
-git clone https://github.com/SolidRun/arm-trusted-firmware.git -b imx-atf-v1.6
+git clone https://source.codeaurora.org/external/imx/imx-atf.git -b imx_4.19.35_1.0.0 arm-trusted-firmware
 git clone https://github.com/SolidRun/u-boot.git -b v2018.11-solidrun
 wget https://www.nxp.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-7.9.bin
 ```
