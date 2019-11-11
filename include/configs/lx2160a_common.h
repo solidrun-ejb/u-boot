@@ -290,7 +290,8 @@ int select_i2c_ch_pca9547_sec(unsigned char ch);
 #define BOOT_TARGET_DEVICES(func) \
 	func(USB, usb, 0) \
 	func(MMC, mmc, 0) \
-	func(SCSI, scsi, 0)
+	func(SCSI, scsi, 0) \
+	func(NVME, nvme, 0)
 #include <config_distro_bootcmd.h>
 
 #endif /* __LX2_COMMON_H */
