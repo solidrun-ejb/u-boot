@@ -250,6 +250,7 @@ int select_i2c_ch_pca9547_sec(unsigned char ch);
 	XSPI_MC_INIT_CMD				\
 	"boot_scripts=lx2160acex7_boot.scr\0"	\
 	"boot_script_hdr=hdr_lx2160acex7_bs.out\0"	\
+	"nvme_need_init=true\0"	\
 	"scan_dev_for_boot_part="		\
 		"part list ${devtype} ${devnum} devplist; "	\
 		"env exists devplist || setenv devplist 1; "	\
