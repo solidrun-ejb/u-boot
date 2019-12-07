@@ -349,6 +349,13 @@ config MPC8XXX_GPIO
 	  value setting, the open-drain feature, which can configure individual
 	  GPIOs to work as open-drain outputs, is supported.
 
+config MPC8XXX_GPIO_LITTLE_ENDIAN
+	bool "Freescale MPC8XXX GPIO driver"
+	depends on MPC8XXX_GPIO
+	default n
+	help
+	  Use Little Endian Accessor in the mpc8xxx gpio driver
+
 config MT7621_GPIO
 	bool "MediaTek MT7621 GPIO driver"
 	depends on DM_GPIO && ARCH_MT7620

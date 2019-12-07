@@ -14,6 +14,17 @@
 #include <asm/gpio.h>
 #include <asm/io.h>
 
+#ifdef CONFIG_MPC8XXX_GPIO_LITTLE_ENDIAN
+#define mpc8xxx_in_32(a)          in_le32(a)
+#define mpc8xxx_clrbits_32(a, v)  clrbits_le32(a, v)
+#define mpc8xxx_setbits_32(a, v)  setbits_le32(a, v)
+#else
+#define mpc8xxx_in_32(a)          in_be32(a)
+#define mpc8xxx_clrbits_32(a, v)  clrbits_be32(a, v)
+#define mpc8xxx_setbits_32(a, v)  setbits_be32(a, v)
+#endif
+
+
 struct ccsr_gpio {
 	u32	gpdir;
 	u32	gpodr;
@@ -50,52 +61,52 @@ inline u32 gpio_mask(uint gpio)
 
 static inline u32 mpc8xxx_gpio_get_val(struct ccsr_gpio *base, u32 mask)
 {
-	return in_be32(&base->gpdat) & mask;
+	return mpc8xxx_in_32(&base->gpdat) & mask;
 }
 
 static inline u32 mpc8xxx_gpio_get_dir(struct ccsr_gpio *base, u32 mask)
 {
-	return in_be32(&base->gpdir) & mask;
+	return mpc8xxx_in_32(&base->gpdir) & mask;
 }
 
 static inline void mpc8xxx_gpio_set_in(struct ccsr_gpio *base, u32 gpios)
 {
-	clrbits_be32(&base->gpdat, gpios);
+	mpc8xxx_clrbits_32(&base->gpdat, gpios);
 	/* GPDIR register 0 -> input */
-	clrbits_be32(&base->gpdir, gpios);
+	mpc8xxx_clrbits_32(&base->gpdir, gpios);
 }
 
 static inline void mpc8xxx_gpio_set_low(struct ccsr_gpio *base, u32 gpios)
 {
-	clrbits_be32(&base->gpdat, gpios);
+	mpc8xxx_clrbits_32(&base->gpdat, gpios);
 	/* GPDIR register 1 -> output */
-	setbits_be32(&base->gpdir, gpios);
+	mpc8xxx_setbits_32(&base->gpdir, gpios);
 }
 
 static inline void mpc8xxx_gpio_set_high(struct ccsr_gpio *base, u32 gpios)
 {
-	setbits_be32(&base->gpdat, gpios);
+	mpc8xxx_setbits_32(&base->gpdat, gpios);
 	/* GPDIR register 1 -> output */
-	setbits_be32(&base->gpdir, gpios);
+	mpc8xxx_setbits_32(&base->gpdir, gpios);
 }
 
 static inline int mpc8xxx_gpio_open_drain_val(struct ccsr_gpio *base, u32 mask)
 {
-	return in_be32(&base->gpodr) & mask;
+	return mpc8xxx_in_32(&base->gpodr) & mask;
 }
 
 static inline void mpc8xxx_gpio_open_drain_on(struct ccsr_gpio *base, u32
 					      gpios)
 {
 	/* GPODR register 1 -> open drain on */
-	setbits_be32(&base->gpodr, gpios);
+	mpc8xxx_setbits_32(&base->gpodr, gpios);
 }
 
 static inline void mpc8xxx_gpio_open_drain_off(struct ccsr_gpio *base,
 					       u32 gpios)
 {
 	/* GPODR register 0 -> open drain off (actively driven) */
-	clrbits_be32(&base->gpodr, gpios);
+	mpc8xxx_clrbits_32(&base->gpodr, gpios);
 }
 
 static int mpc8xxx_gpio_direction_input(struct udevice *dev, uint gpio)
