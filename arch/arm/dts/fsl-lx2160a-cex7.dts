@@ -44,6 +44,8 @@
 
 &esdhc1 {
 	status = "okay";
+	bus-width = <8>;
+	u-boot,mmc-env-partition;
 };
 
 &i2c0 {

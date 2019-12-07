@@ -6,7 +6,18 @@
 #ifndef __LX2_CEX7_H
 #define __LX2_CEX7_H
 
+#include <linux/sizes.h>
 #include "lx2160a_common.h"
+
+#define CONFIG_SUPPORT_EMMC_BOOT
+#undef CONFIG_SYS_MMC_ENV_DEV
+#define CONFIG_SYS_MMC_ENV_DEV          1
+#undef CONFIG_SYS_MMC_ENV_PART
+#define CONFIG_SYS_MMC_ENV_PART         1
+#define CONFIG_ENV_SIZE                 0x2000          /* 8KB */
+#undef CONFIG_ENV_OFFSET
+#define CONFIG_ENV_OFFSET               (SZ_4M - CONFIG_ENV_SIZE)
+#undef CONFIG_ENV_ADDR
 
 /*#define CONFIG_SYS_FSL_ESDHC_USE_PIO*/
 /* VID */
