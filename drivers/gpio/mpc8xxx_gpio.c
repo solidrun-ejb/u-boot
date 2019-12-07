@@ -190,13 +190,13 @@ static int mpc8xxx_gpio_ofdata_to_platdata(struct udevice *dev)
 {
 	struct mpc8xxx_gpio_plat *plat = dev_get_platdata(dev);
 	fdt_addr_t addr;
-	u32 reg[2];
+	u32 reg[4];
 
-	dev_read_u32_array(dev, "reg", reg, 2);
-	addr = dev_translate_address(dev, reg);
+	dev_read_u32_array(dev, "reg", reg, 4);
+	addr = dev_translate_address(dev, reg[1]);
 
-	plat->addr = addr;
-	plat->size = reg[1];
+	plat->addr = reg[1];
+	plat->size = reg[3];
 	plat->ngpios = dev_read_u32_default(dev, "ngpios", 32);
 
 	return 0;
@@ -218,6 +218,8 @@ static int mpc8xxx_gpio_platdata_to_priv(struct udevice *dev)
 
 	if (!priv->base)
 		return -ENOMEM;
+
+	writel(0xffffffff, priv->base + 0x18);
 
 	priv->gpio_count = plat->ngpios;
 	priv->dat_shadow = 0;
