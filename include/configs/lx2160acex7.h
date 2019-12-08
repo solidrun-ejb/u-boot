@@ -75,6 +75,7 @@
 /* Initial environment variables */
 #define CONFIG_EXTRA_ENV_SETTINGS		\
 	EXTRA_ENV_SETTINGS			\
+	"fdtfile=freescale/" CONFIG_DEFAULT_DEVICE_TREE ".dtb\0" \
 	"lx2160acex7_vdd_mv=800\0"		\
 	"BOARD=lx2160acex7\0"			\
 	"xspi_bootcmd=echo Trying load from flexspi..;"		\
