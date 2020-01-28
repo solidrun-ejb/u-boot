@@ -80,13 +80,53 @@ int board_early_init_f(void)
 	return 0;
 }
 
+#define MEM_STRIDE 0x4000000
+static u64 get_ram_size_stride_test(u64 *base, u64 maxsize)
+{
+	volatile u64 *addr;
+	u64	  save[64];
+	u64	  cnt;
+	u64	  size;
+	int	  i = 0;
+
+	/* First save the data */
+	for (cnt = 0; cnt < maxsize; cnt += MEM_STRIDE) {
+		addr = (volatile u64 *)((u64)base + cnt);       /* pointer arith! */
+		sync ();
+		save[i++] = *addr;
+		sync ();
+	}
+
+	/* First write a signature */
+	* (volatile u64 *)base = 0x12345678;
+	for (size = MEM_STRIDE; size < maxsize; size += MEM_STRIDE) {
+		* (volatile u64 *)((u64)base + size) = size;
+		sync ();
+		if (* (volatile u64 *)((u64)base) == size) {    /* We reached the overlapping address */
+			break;
+		}
+	}
+
+	/* Restore the data */
+	for (cnt = (maxsize - MEM_STRIDE); i > 0; cnt -= MEM_STRIDE) {
+		addr = (volatile u64 *)((u64)base + cnt);       /* pointer arith! */
+		sync ();
+		*addr = save[i--];
+		sync ();
+	}
+
+	return (size);
+}
+
 int dram_init(void)
 {
+	u64 ram_size = get_ram_size_stride_test((u64 *) CONFIG_SYS_SDRAM_BASE,
+						(u64)PHYS_SDRAM_SIZE);
 	/* rom_pointer[1] contains the size of TEE occupies */
 	if (rom_pointer[1])
-		gd->ram_size = PHYS_SDRAM_SIZE - rom_pointer[1];
+		gd->ram_size = ram_size - rom_pointer[1];
 	else
-		gd->ram_size = PHYS_SDRAM_SIZE;
+		gd->ram_size = ram_size;
 
 	return 0;
 }

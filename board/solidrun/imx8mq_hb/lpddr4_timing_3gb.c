@@ -10,7 +10,7 @@
 
 #define WR_POST_EXT_3200	/* recommened to define */
 
-struct dram_cfg_param lpddr4_ddrc_cfg[] = {
+struct dram_cfg_param lpddr4_3g_ddrc_cfg[] = {
 	/* Start to config, default 3200mbps */
 	{ DDRC_DBG1(0), 0x00000001 },
 	{ DDRC_PWRCTL(0), 0x00000001 },
@@ -121,7 +121,7 @@ struct dram_cfg_param lpddr4_ddrc_cfg[] = {
 };
 
 /* PHY Initialize Configuration */
-struct dram_cfg_param lpddr4_ddrphy_cfg[] = {
+struct dram_cfg_param lpddr4_3g_ddrphy_cfg[] = {
 	{ 0x100a0, 0x5 },
 	{ 0x100a1, 0x7 },
 	{ 0x100a2, 0x6 },
@@ -580,7 +580,7 @@ struct dram_cfg_param lpddr4_fsp0_2d_cfg[] = {
 };
 
 /* DRAM PHY init engine image */
-struct dram_cfg_param lpddr4_phy_pie[] = {
+struct dram_cfg_param lpddr4_3g_phy_pie[] = {
 	{ 0xd0000, 0x0 },
 	{ 0x90000, 0x10 },
 	{ 0x90001, 0x400 },
@@ -1163,7 +1163,7 @@ struct dram_cfg_param lpddr4_phy_pie[] = {
 	{ 0xd0000, 0x1 },
 };
 
-struct dram_fsp_msg lpddr4_dram_fsp_msg[] = {
+struct dram_fsp_msg lpddr4_3g_dram_fsp_msg[] = {
 	{
 		/* P0 3200mts 1D */
 		.drate = 3200,
@@ -1187,15 +1187,15 @@ struct dram_fsp_msg lpddr4_dram_fsp_msg[] = {
 	},
 };
 
-/* lpddr4 timing config params on EVK board */
-struct dram_timing_info dram_timing = {
-	.ddrc_cfg = lpddr4_ddrc_cfg,
-	.ddrc_cfg_num = ARRAY_SIZE(lpddr4_ddrc_cfg),
-	.ddrphy_cfg = lpddr4_ddrphy_cfg,
-	.ddrphy_cfg_num = ARRAY_SIZE(lpddr4_ddrphy_cfg),
-	.fsp_msg = lpddr4_dram_fsp_msg,
-	.fsp_msg_num = ARRAY_SIZE(lpddr4_dram_fsp_msg),
-	.ddrphy_pie = lpddr4_phy_pie,
-	.ddrphy_pie_num = ARRAY_SIZE(lpddr4_phy_pie),
+/* lpddr4 3GB timing config params */
+struct dram_timing_info lpddr4_3g_dram_timing = {
+	.ddrc_cfg = lpddr4_3g_ddrc_cfg,
+	.ddrc_cfg_num = ARRAY_SIZE(lpddr4_3g_ddrc_cfg),
+	.ddrphy_cfg = lpddr4_3g_ddrphy_cfg,
+	.ddrphy_cfg_num = ARRAY_SIZE(lpddr4_3g_ddrphy_cfg),
+	.fsp_msg = lpddr4_3g_dram_fsp_msg,
+	.fsp_msg_num = ARRAY_SIZE(lpddr4_3g_dram_fsp_msg),
+	.ddrphy_pie = lpddr4_3g_phy_pie,
+	.ddrphy_pie_num = ARRAY_SIZE(lpddr4_3g_phy_pie),
 	.fsp_table = { 3200, 667, },
 };

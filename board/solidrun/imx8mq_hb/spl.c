@@ -25,12 +25,17 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
-extern struct dram_timing_info dram_timing;
+extern struct dram_timing_info lpddr4_3g_dram_timing;
+extern struct dram_timing_info lpddr4_1g_dram_timing;
 
 void spl_dram_init(void)
 {
+	int ret;
+
 	/* ddr init */
-	ddr_init(&dram_timing);
+	ret = ddr_init(&lpddr4_3g_dram_timing);
+	if (ret)
+		ret = ddr_init(&lpddr4_1g_dram_timing);
 }
 
 #define I2C_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_HYS | PAD_CTL_PUE)
