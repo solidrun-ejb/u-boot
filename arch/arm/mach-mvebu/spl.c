@@ -14,6 +14,25 @@
 #include <asm/io.h>
 #include <asm/arch/cpu.h>
 #include <asm/arch/soc.h>
+#if defined(CONFIG_SECURED_MODE_IMAGE)
+#include <asm/arch/efuse.h>
+extern int fuse_read(u32 bank, u32 word, u32 *val);
+static struct mbus_win windows[] = {
+        /* SPI */
+        { MBUS_SPI_BASE, MBUS_SPI_SIZE,
+          CPU_TARGET_DEVICEBUS_BOOTROM_SPI, CPU_ATTR_SPIFLASH },
+
+        /* NOR */
+        { MBUS_BOOTROM_BASE, MBUS_BOOTROM_SIZE,
+          CPU_TARGET_DEVICEBUS_BOOTROM_SPI, CPU_ATTR_BOOTROM },
+
+#ifdef CONFIG_ARMADA_MSYS
+        /* DFX */
+        { MBUS_DFX_BASE, MBUS_DFX_SIZE, CPU_TARGET_DFX, 0 },
+#endif
+};
+#endif
+
 
 static u32 get_boot_device(void)
 {
@@ -47,6 +66,16 @@ static u32 get_boot_device(void)
 	val = readl(CONFIG_SAR_REG);	/* SAR - Sample At Reset */
 	boot_device = (val & BOOT_DEV_SEL_MASK) >> BOOT_DEV_SEL_OFFS;
 	debug("SAR_REG=0x%08x boot_device=0x%x\n", val, boot_device);
+
+#if defined(CONFIG_SECURED_MODE_IMAGE)
+	if (boot_device == BOOT_FROM_SECURE_BOOT) {
+		mvebu_mbus_probe(windows, ARRAY_SIZE(windows));
+		fuse_read(EFUSE_LINE_SECURE_BOOT, 0, &val);
+		boot_device = (val & SECURE_BOOT_DEV_SEL_MASK) >> SECURE_BOOT_DEV_SEL_OFFS;
+		debug("EFUSE_LINE_SECURE_BOOT=0x%08x boot_device=0x%x\n", val, boot_device);
+	}
+#endif
+
 	switch (boot_device) {
 #if defined(CONFIG_ARMADA_38X)
 	case BOOT_FROM_NAND:

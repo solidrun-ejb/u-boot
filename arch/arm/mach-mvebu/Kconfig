@@ -283,6 +283,7 @@ config SECURED_MODE_IMAGE
 	bool "Build image for trusted boot"
 	default false
 	depends on 88F6820
+	select MVEBU_EFUSE
 	help
 	  Build an image that employs the ARMADA SoC's trusted boot framework
 	  for securely booting images.
