@@ -62,8 +62,13 @@
 /* SPL */
 
 /* Defines for SPL */
+#if defined(CONFIG_SECURED_MODE_IMAGE)
+#define CONFIG_SPL_SIZE			(160 << 10)
+#define CONFIG_SPL_MAX_SIZE		(CONFIG_SPL_SIZE - 0x2614)
+#else
 #define CONFIG_SPL_SIZE			(140 << 10)
 #define CONFIG_SPL_MAX_SIZE		(CONFIG_SPL_SIZE - 0x0030)
+#endif
 
 #define CONFIG_SPL_BSS_START_ADDR	(0x40000000 + CONFIG_SPL_SIZE)
 #define CONFIG_SPL_BSS_MAX_SIZE		(16 << 10)
@@ -72,7 +77,11 @@
 #define CONFIG_SYS_MALLOC_SIMPLE
 #endif
 
+#if defined(CONFIG_SECURED_MODE_IMAGE)
+#define CONFIG_SPL_STACK		(0x40000000 + ((212 - 16) << 10))
+#else
 #define CONFIG_SPL_STACK		(0x40000000 + ((192 - 16) << 10))
+#endif
 #define CONFIG_SPL_BOOTROM_SAVE		(CONFIG_SPL_STACK + 4)
 
 #if defined(CONFIG_MVEBU_SPL_BOOT_DEVICE_SPI)
