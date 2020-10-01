@@ -8,5 +8,16 @@ VERSION		1
 # Boot Media configurations
 #@BOOT_FROM
 
+# Secure Boot
+#@KAK
+#@CSK
+#@CSK_INDEX
+#@JTAG_DELAY
+#@BOX_ID
+#@FLASH_ID
+#@SEC_BOOT_DEV
+#@SEC_FUSE_DUMP
+#@DEBUG
+
 # Binary Header (bin_hdr) with DDR3 training code
 BINARY spl/u-boot-spl.bin 0000005b 00000068

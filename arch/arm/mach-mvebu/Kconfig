@@ -287,8 +287,47 @@ config SECURED_MODE_IMAGE
 	  Build an image that employs the ARMADA SoC's trusted boot framework
 	  for securely booting images.
 
+config SECURED_MODE_KAK
+	string "Name of kak filename"
+	default kwb_kak
+	depends on SECURED_MODE_IMAGE
+	help
+	  The filename that holds the kak key without the .key extension.
+
+config SECURED_MODE_CSK
+	string "Name of csk filename"
+	default kwb_csk
+	depends on SECURED_MODE_IMAGE
+	help
+	  The filename that holds the csk key without the .key extension.
+
 config SECURED_MODE_CSK_INDEX
 	int "Index of active CSK"
+	default 0
+	depends on SECURED_MODE_IMAGE
+	help
+	  The index of the active CSK. Only index 0 has been tested.
+
+config SECURED_MODE_JTAG_DELAY
+	int "JTAG enabled delay"
+	default 0
+	depends on SECURED_MODE_IMAGE
+	help
+	  A delay in the boot process (x milliseconds) allowing access to JTAG after
+	  parsing the boot header.
+
+config SECURED_MODE_BOX_ID
+	int "Box ID"
+	default 0
+	depends on SECURED_MODE_IMAGE
+
+config SECURED_MODE_FLASH_ID
+	int "Flash ID"
+	default 0
+	depends on SECURED_MODE_IMAGE
+
+config SECURED_MODE_DEBUG
+	int "Enable BootROM messages"
 	default 0
 	depends on SECURED_MODE_IMAGE
 
