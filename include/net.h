@@ -808,6 +808,19 @@ static inline int is_valid_ethaddr(const u8 *addr)
 }
 
 /**
+ * string_to_enetaddr() - Parse a MAC address
+ *
+ * Convert a string MAC address
+ *
+ * Implemented in lib/net_utils.c (built unconditionally)
+ *
+ * @addr: MAC address in aa:bb:cc:dd:ee:ff format, where each part is a 2-digit
+ *	hex value
+ * @enetaddr: Place to put MAC address (6 bytes)
+ */
+void string_to_enetaddr(const char *addr, uint8_t *enetaddr);
+
+/**
  * net_random_ethaddr - Generate software assigned random Ethernet address
  * @addr: Pointer to a six-byte array containing the Ethernet address
  *
@@ -820,7 +833,7 @@ static inline void net_random_ethaddr(uchar *addr)
 	unsigned int seed = get_ticks();
 
 #ifdef CONFIG_NET_RANDOM_ETHADDR_OUI
-	eth_parse_enetaddr(CONFIG_NET_RANDOM_ETHADDR_OUI, addr);
+	string_to_enetaddr(CONFIG_NET_RANDOM_ETHADDR_OUI, addr);
 	if (is_valid_ethaddr(addr))
 		j = 3;
 #endif	
@@ -831,19 +844,6 @@ static inline void net_random_ethaddr(uchar *addr)
 	addr[0] &= 0xfe;	/* clear multicast bit */
 	addr[0] |= 0x02;	/* set local assignment bit (IEEE802) */
 }
-
-/**
- * string_to_enetaddr() - Parse a MAC address
- *
- * Convert a string MAC address
- *
- * Implemented in lib/net_utils.c (built unconditionally)
- *
- * @addr: MAC address in aa:bb:cc:dd:ee:ff format, where each part is a 2-digit
- *	hex value
- * @enetaddr: Place to put MAC address (6 bytes)
- */
-void string_to_enetaddr(const char *addr, uint8_t *enetaddr);
 
 /* Convert an IP address to a string */
 void ip_to_string(struct in_addr x, char *s);
